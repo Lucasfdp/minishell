@@ -1,0 +1,37 @@
+🔹 1. Splitting commands (tokenization)
+Input like:
+
+ls -l | grep ".c" > output.txt
+Needs to be split into:
+
+ls -l
+
+grep ".c"
+
+Handle redirection > and file output.txt
+
+Handle the pipe |
+
+🔹 2. Handling quotes
+"quoted strings with spaces" shouldn't be split
+
+'single quotes' behave differently from "
+
+🔹 3. Environment variables
+echo $HOME → replace $HOME with value from env
+
+🔹 4. Operator awareness
+You need to identify:
+
+| (pipe)
+
+>, >>, <, << (redirections)
+
+These are not just normal arguments
+
+🔹 5. Expanding tokens
+Once you parse the string, you'll:
+
+Clean and process it into executable commands
+
+Store them in structs (cmd, args, in/out redirs, etc.)
