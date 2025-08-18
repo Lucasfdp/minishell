@@ -1,0 +1,59 @@
+🔹 Arguments
+
+No args → go to $HOME.
+
+If $HOME is unset or empty → print error.
+
+Single dash (cd -) → go to $OLDPWD.
+
+If $OLDPWD is unset → print error.
+
+If it exists → change dir, then print the new path.
+
+Too many args (cd dir1 dir2) → error: "cd: too many arguments".
+
+Normal path (cd somedir) → just try chdir("somedir").
+
+🔹 Path handling
+
+. → stay in the same directory (no real effect, but still valid).
+
+.. → go up one directory (chdir("..")).
+
+Relative vs absolute paths both work since chdir() understands both.
+
+🔹 Env updates
+
+On success:
+
+Save old $PWD into $OLDPWD.
+
+Get the new path with getcwd() → update $PWD.
+
+Make sure your env array actually updates (unset might’ve removed one of them).
+
+On failure:
+
+Print error like: minishell: cd: somedir: No such file or directory.
+
+Don’t change $PWD or $OLDPWD.
+
+🔹 Subtleties
+
+Symbolic links:
+
+chdir() follows them automatically.
+
+So if $PWD was /home/user and you cd symlink, PWD becomes the resolved path unless you want to handle -P / -L modes (not required in minishell).
+
+Empty string path (cd ""): Bash treats it as an error.
+
+Permissions: If you don’t have x (execute) rights → cd fails with "Permission denied".
+
+👉 In summary:
+
+Implement basics first (cd dir, cd, cd -).
+
+Add env updates (PWD, OLDPWD).
+
+Handle errors (HOME unset, too many args, no such dir, permission denied).

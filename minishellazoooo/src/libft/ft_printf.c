@@ -5,7 +5,7 @@ int	ft_strlen_pf(const char *str)
 	int	i;
 
 	i = 0;
-     if (!str)
+    if (!str)
 	{
 		write(1, ("(null)"), 6);
 		return (6);

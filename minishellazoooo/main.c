@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "src/minishell.h"
 
 int	main(int ac, char **av, char **envp)
 {
@@ -15,7 +15,6 @@ int	main(int ac, char **av, char **envp)
 			break;
 
 		// TODO: parsing, execution, etc.
-		if (tokeniser(input))
 		execute_builtins(input, &shell);
 		free(input);
 	}

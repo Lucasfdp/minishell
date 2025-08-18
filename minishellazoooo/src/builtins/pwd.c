@@ -1,9 +1,10 @@
-#include "minishell.h"
+#include "builtins.h"
 
 void	execute_pwd(void)
 {
-	char	*pwd = getcwd(NULL, 0);
+	char	*pwd;
 
+	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
 		printf("%s\n", pwd);

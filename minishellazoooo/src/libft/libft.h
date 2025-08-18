@@ -6,7 +6,7 @@
 /*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/07/20 07:30:22 by lucas            ###   ########.fr       */
+/*   Updated: 2025/07/26 05:43:10 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	*ft_memmove(void *dest, const void *src, size_t n);
 void	ft_bzero(void *s, size_t n);
 
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(char *s1, char *s2);
 size_t	ft_strlcat(char *dest, const char *src, size_t size);
 size_t	ft_strlcpy(char *dest, const char *src, size_t size);
 char	*ft_strncpy(char *dest, char *src, int size);
