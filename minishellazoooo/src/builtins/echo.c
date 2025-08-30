@@ -7,6 +7,11 @@ void	execute_echo(char **args)
 
 	output = ft_strdup("");
 	i = 0;
+	if (!args[1])
+	{
+		printf("\n");
+		return ;
+	}
 	if (ft_strncmp(args[1], "-n", 3) == 0)
 	{
 		i = 1;

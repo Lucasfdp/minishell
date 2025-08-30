@@ -15,17 +15,35 @@ extern void rl_replace_line(const char *text, int clear_undo);
 extern int rl_on_new_line(void);
 extern void rl_redisplay(void);
 
+typedef enum e_redir_type
+{
+    REDIR_IN,
+    REDIR_OUT,
+    REDIR_APPEND,
+    REDIR_HEREDOC
+}   t_redir_type;
+
+typedef struct s_redir
+{
+    t_redir_type type;
+    char         *file;
+    struct s_redir *next;
+}   t_redir;
+
+typedef struct s_commands
+{
+	char	**args;
+	t_redir	*redirs;
+}	t_commands;
 
 typedef struct s_shell
 {
 	char	**env;
 	int		last_status;
+	char	**tokens;
+	t_commands	**commands;
 }	t_shell;
 
-typedef struct s_tokens
-{
-
-}	t_tokens;
 
 
 // readline functions

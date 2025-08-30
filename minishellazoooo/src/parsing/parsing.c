@@ -1,38 +1,123 @@
 #include "minishell.h"
 
+int	is_operator_char(char c)
+{
+	return (c == '|' || c == '<' || c == '>');
+}
+
 int	count_tokens(char *input)
 {
-	int	i;
-	int	num_tokens;
+	int i = 0;
+	int count = 0;
+	int in_single = 0;
+	int in_double = 0;
 
-	i = 0;
-	num_tokens = 0;
 	while (input[i])
 	{
-		if (input[i] == ' ' || input[i] == '\t')
+		while (ft_isspace(input[i]))
+			i++;
+		if (!input[i])
+			break;
+		if (is_operator_char(input[i]))
 		{
-			num_tokens++;
-			while (input[i] == ' ' || input[i] == '\t')
+			count++;
+			if ((input[i] == '<' && input[i + 1] == '<') ||
+				(input[i] == '>' && input[i + 1] == '>'))
+				i += 2;
+			else
 				i++;
 		}
 		else
-			i++;
+		{
+			count++;
+			while (input[i] && (!ft_isspace(input[i]) || in_single || in_double))
+			{
+				if (input[i] == '\'' && !in_double)
+					in_single = !in_single;
+				else if (input[i] == '\"' && !in_single)
+					in_double = !in_double;
+				else if (!in_single && !in_double && is_operator_char(input[i]))
+					break;
+				i++;
+			}
+		}
 	}
-	return (num_tokens);
+	return (count);
 }
 
-int	tokeniser(char *input)
+char	**tokeniser(char *input)
 {
-	char	**tokens;
-	int		num_tokens;
-	int i = 0;
+	char **tokens;
+	char *command;
+	int num_tokens = count_tokens(input);
+	int single_q = 0, double_q = 0;
+	int i = 0, j = 0, k = 0;
 
-	num_tokens = count_tokens(input);
-	tokens = (char **)malloc(sizeof(char *) * num_tokens);
+	tokens = malloc(sizeof(char *) * (num_tokens + 1));
 	if (!tokens)
-		return (0);
-	tokens = ft_split((const char *)input, ' ');
-	while (tokens[i])
-		printf("%s\n", tokens[i]);
-	return (1);
+		return NULL;
+	command = malloc(ft_int_strlen(input) + 1);
+	if (!command)
+		return NULL;
+	while (input[i])
+	{
+		if (input[i] == '\'' && !double_q)
+		{
+			single_q = !single_q;
+			i++;
+			continue;
+		}
+		if (input[i] == '"' && !single_q)
+		{
+			double_q = !double_q;
+			i++;
+			continue; 
+		}
+		if ((input[i] == '|' || input[i] == '<' || input[i] == '>') && !single_q && !double_q)
+		{
+			if (k > 0) {
+				command[k] = '\0';
+				tokens[j++] = ft_strdup(command);
+				k = 0;
+			}
+			if (input[i] == '<' && input[i+1] == '<') {
+				tokens[j++] = ft_strdup("<<");
+				i += 2;
+				continue;
+			}
+			if (input[i] == '>' && input[i+1] == '>') {
+				tokens[j++] = ft_strdup(">>");
+				i += 2;
+				continue;
+			}
+			char op[2] = {input[i], '\0'};
+			tokens[j++] = ft_strdup(op);
+			i++;
+			continue;
+		}
+		if (input[i] == ' ' && !single_q && !double_q)
+		{
+			if (k > 0) {
+				command[k] = '\0';
+				tokens[j++] = ft_strdup(command);
+				k = 0;
+			}
+			i++;
+			continue;
+		}
+		command[k++] = input[i++];
+	}
+	if (k > 0)
+	{
+		command[k] = '\0';
+		tokens[j++] = ft_strdup(command);
+	}
+	tokens[j] = NULL;
+	free(command);
+	return tokens;
 }
+
+// void	prepare_structs(t_shell *shell)
+// {
+	
+// }

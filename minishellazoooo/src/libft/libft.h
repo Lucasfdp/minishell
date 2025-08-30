@@ -6,7 +6,7 @@
 /*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/07/26 05:43:10 by lucas            ###   ########.fr       */
+/*   Updated: 2025/08/28 00:15:29 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ int		ft_isalpha(int c);
 int		ft_isascii(int c);
 int		ft_isalnum(int c);
 int		ft_isprint(int c);
+int		ft_isspace(char c);
+
 
 void	*ft_memchr(const void *s, int c, size_t n);
 void	*ft_memset(void *s, int c, size_t n);

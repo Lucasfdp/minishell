@@ -8,7 +8,7 @@
 
 // }	t_tokens;
 
-int	count_tokens(char *input);
-int	tokeniser(char *input);
+int		count_tokens(char *input);
+char	**tokeniser(char *input);
 
 #endif
