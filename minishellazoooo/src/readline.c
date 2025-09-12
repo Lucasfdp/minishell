@@ -12,7 +12,7 @@ void	handle_sigint(int sig)
 void	setup_signals(void)
 {
 	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, SIG_IGN);  // CTRL+\ should do nothing in prompt
+	signal(SIGQUIT, SIG_IGN);
 }
 
 char	*read_input(const char *prompt)

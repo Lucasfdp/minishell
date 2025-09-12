@@ -50,8 +50,13 @@ char	**tokeniser(char *input)
 	char **tokens;
 	char *command;
 	int num_tokens = count_tokens(input);
-	int single_q = 0, double_q = 0;
-	int i = 0, j = 0, k = 0;
+	int single_q = 0;
+	int	double_q = 0;
+	int i = 0;
+	int j = 0;
+	int	k = 0;
+	char op[2];
+
 
 	tokens = malloc(sizeof(char *) * (num_tokens + 1));
 	if (!tokens)
@@ -90,12 +95,13 @@ char	**tokeniser(char *input)
 				i += 2;
 				continue;
 			}
-			char op[2] = {input[i], '\0'};
+			op[0] = input[i];
+			op[0] = '\0';
 			tokens[j++] = ft_strdup(op);
 			i++;
 			continue;
 		}
-		if (input[i] == ' ' && !single_q && !double_q)
+		if (ft_isspace(input[i]) && !single_q && !double_q)
 		{
 			if (k > 0) {
 				command[k] = '\0';
@@ -113,6 +119,12 @@ char	**tokeniser(char *input)
 		tokens[j++] = ft_strdup(command);
 	}
 	tokens[j] = NULL;
+	if (single_q || double_q) 
+	{
+		// report syntax error, free tokens
+		return (NULL);
+	}
+
 	free(command);
 	return tokens;
 }
