@@ -1,24 +1,49 @@
 NAME = minishell
 CC = cc
 READLINE_PATH = /opt/homebrew/opt/readline
-CFLAGS = -Wall -Wextra -Werror -I$(READLINE_PATH)/include
-LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
 
-LIBFT_DIR = ./libft
+SRC_DIR = src
+LIBFT_DIR = $(SRC_DIR)/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = main.c readline.c builtins.c echo.c pwd.c env.c parsing.c
+CFLAGS = -Wall -Wextra -Werror \
+	-I$(READLINE_PATH)/include \
+	-I$(SRC_DIR) \
+	-I$(LIBFT_DIR)
+
+LDFLAGS = -L$(READLINE_PATH)/lib -lreadline
+
+BUILTINS_DIR = $(SRC_DIR)/builtins
+PARSING_DIR = $(SRC_DIR)/parsing
+
+SRCS = main.c \
+	$(SRC_DIR)/readline.c \
+	$(BUILTINS_DIR)/builtins.c \
+	$(BUILTINS_DIR)/echo.c \
+	$(BUILTINS_DIR)/pwd.c \
+	$(BUILTINS_DIR)/env.c \
+	$(PARSING_DIR)/parsing.c \
+	$(BUILTINS_DIR)/export.c \
+	$(BUILTINS_DIR)/unset.c \
+	$(BUILTINS_DIR)/cd.c \
+	$(BUILTINS_DIR)/exit.c
+
 OBJS = $(SRCS:.c=.o)
+
+GREEN    = \033[0;32m
+RESET    = \033[0m
 
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT) $(LDFLAGS)
+	@echo "$(GREEN)Build complete: $(NAME)$(RESET)"
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
+	@echo "$(GREEN)Libft Build Complete$(RESET)"
 
-%.o: %.c minishell.h
+%.o: %.c ./minishell.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
@@ -31,4 +56,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re libft
