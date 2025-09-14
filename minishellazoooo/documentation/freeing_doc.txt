@@ -1,0 +1,41 @@
+🔑 Checklist for Freeing Memory in Minishell
+Freeing one command (free_command)
+
+Args
+
+Loop through command->args[i], free each string.
+
+Free the args array itself.
+
+Redirs
+
+Traverse the command->redirs linked list:
+
+Free redir->file.
+
+Free the redir node.
+
+Command struct
+
+Finally, free(command).
+
+Freeing the list of commands (free_commands)
+
+Loop through t_command *current = shell->commands.
+
+For each node, call free_command(current).
+
+Move to current->next until the end.
+
+Freeing the shell (free_shell)
+
+Free the linked list of commands (free_commands(shell->commands)).
+
+Free shell->tokens if you malloc’ed them in tokeniser.
+
+Free your environment copy if you duplicated it (shell->env).
+
+Finally, free the t_shell itself if allocated dynamically.
+
+✅ Golden rule: Always free from the inside out:
+strings → arrays / nodes → command → command list → shell.
