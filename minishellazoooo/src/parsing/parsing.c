@@ -1,34 +1,11 @@
 #include "parsing.h"
+#include "minishell.h"
 
-void	fill_structs(t_shell *shell, char **tokens)
-{
-	int	i;
-	t_command	*command;
-	
-	i = 0;
-	command = init_command();
-	if (!command)
-		// error stuffs
-	while (tokens[i])
-	{
-		if (ft_strncmp(tokens[i], "|", 2))
-		{
-			add_command(shell, command);
-
-		}
-		else if (is_redir(tokens[i]) != -1)
-		{
-			add_redir(command, is_redir(tokens[i]), tokens[i + 1]);
-		}
-		else
-			add_arg(command);
-	}
-}
 
 t_command	*init_command()
 {
 	t_command *command;
-
+	
 	command = (t_command *)malloc(sizeof(t_command));
 	if (!command)
 		return (NULL);
@@ -43,12 +20,12 @@ t_command	*init_command()
 int	add_command(t_shell *shell, t_command *command)
 {
 	t_command *last;
-
+	
 	if (!command)
 		return (0);
 	last = shell->commands;
 	if (!last)
-		shell->commands = command;
+	shell->commands = command;
 	else
 	{
 		while (last->next != NULL)
@@ -76,7 +53,7 @@ int	add_redir(t_command *command, t_redir_type type, char *file_token)
 {
 	t_redir *redir;
 	t_redir *redir_last;
-
+	
 	redir = (t_redir *)malloc(sizeof(t_redir));
 	if (!redir)
 		return (0);
@@ -95,7 +72,106 @@ int	add_redir(t_command *command, t_redir_type type, char *file_token)
 	return (1);
 }
 
-int	add_arg(t_command *command)
+void	copy_args(char **src, char **dest)
 {
+	int i;
+	
+	if (!src || !dest)
+		return;
+	i = 0;
+	while (src[i])
+	{
+		dest[i] = ft_strdup(src[i]);
+		i++;
+	}
+}
 
+int	array_len(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array[i])
+		i++;
+	return (i);
+}
+
+char	**add_arg(char **cmd_args, char *arg)
+{
+	int		i;
+	int 	j;
+	char	**new_args;
+
+	if (!cmd_args)
+	{
+		new_args = malloc(sizeof(char *) * 2);
+		if (!new_args)
+			return (NULL);
+		new_args[0] = ft_strdup(arg);
+		new_args[1] = NULL;
+		return (new_args);
+	}
+	i = 0;
+	while (cmd_args[i])
+		i++;
+	new_args = malloc(sizeof(char *) * (i + 2));
+	if (!new_args)
+		return (NULL);
+	j = -1;
+	while (++j < i)
+		new_args[j] = ft_strdup(cmd_args[j]);
+	new_args[i] = ft_strdup(arg);
+	new_args[i + 1] = NULL;
+	free_array(cmd_args, array_len(cmd_args));
+	return (new_args);
+}
+
+void	fill_structs(t_shell *shell, char **tokens)
+{
+	int			i;
+	int			type;
+	t_command	*command;
+
+	i = 0;
+	command = init_command();
+	if (!command)
+		return ; // error stuffs
+	while (tokens[i])
+	{
+		if (ft_strncmp(tokens[i], "|", 2) == 0)
+		{
+			// finalize and append command
+			if (!command->args && !command->redirs)
+			{
+				// syntax error (empty command before pipe)
+				free(command);
+				return ;
+			}
+			add_command(shell, command);
+			command = init_command();
+			if (!command)
+				return ;
+			i++;
+			continue;
+		}
+		type = is_redir(tokens[i]);
+		if (type != REDIR_NONE)
+		{
+			if (!tokens[i + 1])
+			{
+				// syntax error: missing filename
+				free(command);
+				return ;
+			}
+			add_redir(command, type, tokens[i + 1]);
+			i += 2;
+			continue;
+		}
+		command->args = add_arg(command->args, tokens[i]);
+		i++;
+	}
+	if (command->args || command->redirs)
+		add_command(shell, command);
+	else
+		free(command);
 }

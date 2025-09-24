@@ -80,23 +80,26 @@ char	**tokeniser(char *input)
 		}
 		if ((input[i] == '|' || input[i] == '<' || input[i] == '>') && !single_q && !double_q)
 		{
-			if (k > 0) {
+			if (k > 0)
+			{
 				command[k] = '\0';
 				tokens[j++] = ft_strdup(command);
 				k = 0;
 			}
-			if (input[i] == '<' && input[i+1] == '<') {
+			if (input[i] == '<' && input[i+1] == '<')
+			{
 				tokens[j++] = ft_strdup("<<");
 				i += 2;
 				continue;
 			}
-			if (input[i] == '>' && input[i+1] == '>') {
+			if (input[i] == '>' && input[i+1] == '>')
+			{
 				tokens[j++] = ft_strdup(">>");
 				i += 2;
 				continue;
 			}
 			op[0] = input[i];
-			op[0] = '\0';
+			op[1] = '\0';
 			tokens[j++] = ft_strdup(op);
 			i++;
 			continue;
@@ -128,8 +131,3 @@ char	**tokeniser(char *input)
 	free(command);
 	return tokens;
 }
-
-// void	prepare_structs(t_shell *shell)
-// {
-	
-// }

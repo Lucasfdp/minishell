@@ -22,11 +22,12 @@ SRCS = main.c \
 	$(BUILTINS_DIR)/echo.c \
 	$(BUILTINS_DIR)/pwd.c \
 	$(BUILTINS_DIR)/env.c \
-	$(PARSING_DIR)/parsing.c \
 	$(BUILTINS_DIR)/export.c \
 	$(BUILTINS_DIR)/unset.c \
 	$(BUILTINS_DIR)/cd.c \
-	$(BUILTINS_DIR)/exit.c
+	$(BUILTINS_DIR)/exit.c \
+	$(PARSING_DIR)/parsing.c \
+	$(PARSING_DIR)/tokeniser.c
 
 OBJS = $(SRCS:.c=.o)
 

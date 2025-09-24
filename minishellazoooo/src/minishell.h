@@ -8,7 +8,6 @@
 # include <signal.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-# include "parsing/parsing.h"
 # include "builtins/builtins.h"
 
 extern void rl_replace_line(const char *text, int clear_undo);
@@ -31,14 +30,16 @@ typedef struct s_redir
     struct s_redir  *next;
 }   t_redir;
 
-typedef struct s_command
+typedef struct s_command t_command;
+
+struct s_command
 {
-	char	    **args;
-    int         input_fd;
-    int         output_fd;
-	t_redir	    *redirs;
-    t_command  *next;
-}	t_command;
+    char      **args;
+    int        input_fd;
+    int        output_fd;
+    t_redir   *redirs;
+    t_command *next;
+};
 
 typedef struct s_shell
 {
