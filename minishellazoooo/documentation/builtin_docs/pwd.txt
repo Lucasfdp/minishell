@@ -1,0 +1,38 @@
+## Builtin: `pwd`
+
+### Overview
+
+`pwd` prints the current working directory. It is implemented by calling `getcwd()` or using the internally tracked `PWD` environment variable.
+
+### Edge Cases
+
+* **Environment vs system** → if `PWD` is inconsistent with `getcwd()`, decide whether to trust `getcwd()`.
+* **Long paths** → handle errors if path exceeds system limits.
+* **Deleted directories** → if current directory is removed, `getcwd()` may fail.
+
+### Things to Test For
+
+1. `pwd` in a normal directory → prints absolute path.
+2. `pwd` after `cd` → matches updated directory.
+3. `pwd` after `rmdir` of current dir → should fail gracefully.
+4. Very deep directories → still prints full path or error.
+
+
+## Builtin: `pwd`
+
+### Resumen
+
+`pwd` imprime el directorio de trabajo actual. Se implementa usando `getcwd()` o la variable de entorno `PWD`.
+
+### Casos Especiales
+
+* **Entorno vs sistema** → si `PWD` no coincide con `getcwd()`, decidir cuál confiar.
+* **Rutas largas** → manejar errores si exceden los límites del sistema.
+* **Directorios borrados** → `getcwd()` puede fallar si el directorio actual se eliminó.
+
+### Casos a Probar
+
+1. `pwd` en un directorio normal → imprime la ruta absoluta.
+2. `pwd` después de `cd` → debe coincidir con el nuevo directorio.
+3. `pwd` tras eliminar el directorio actual → error controlado.
+4. Directorios muy profundos → imprime ruta o error según límite.

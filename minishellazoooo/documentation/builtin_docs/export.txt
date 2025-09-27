@@ -1,0 +1,44 @@
+## Builtin: `export`
+
+### Overview
+
+`export` sets or modifies environment variables. Variables exported this way become available to child processes. Without arguments, it prints the list of exported variables in sorted order (depending on spec).
+
+### Edge Cases
+
+* **Invalid identifiers** → names starting with digits, containing `=`, or special characters must trigger an error.
+* **Appending (`+=`)** → required by Bash but not always by minishell (check subject).
+* **No arguments** → must print environment list in a consistent format.
+* **Exporting empty value** → `export VAR=` should set `VAR` to empty string.
+* **Re-exporting existing var** → should update or leave unchanged depending on syntax.
+
+### Things to Test For
+
+1. `export VAR=hello` → child processes see `VAR=hello`.
+2. `export VAR` → defines empty variable.
+3. `export` (no args) → prints sorted list of variables.
+4. `export 1ABC=xyz` → error for invalid identifier.
+5. `export VAR=hello VAR2=bye` → multiple definitions in one call.
+
+
+## Builtin: `export`
+
+### Resumen
+
+`export` define o modifica variables de entorno. Las variables exportadas se heredan en procesos hijos. Sin argumentos, muestra la lista de variables exportadas en orden (dependiendo de la especificación).
+
+### Casos Especiales
+
+* **Identificadores inválidos** → nombres que empiezan con dígitos, contienen `=` o caracteres especiales deben dar error.
+* **Añadir (`+=`)** → requerido en Bash pero no siempre en minishell (depende del enunciado).
+* **Sin argumentos** → imprimir la lista de variables en formato consistente.
+* **Valor vacío** → `export VAR=` debe definir `VAR` como cadena vacía.
+* **Re-exportar** → debe actualizar o mantener según la sintaxis.
+
+### Casos a Probar
+
+1. `export VAR=hola` → procesos hijos ven `VAR=hola`.
+2. `export VAR` → define variable vacía.
+3. `export` (sin args) → muestra lista de variables ordenada.
+4. `export 1ABC=xyz` → error de identificador inválido.
+5. `export VAR=hola VAR2=adios` → múltiples definiciones en una llamada.

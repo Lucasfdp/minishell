@@ -1,0 +1,110 @@
+## Minishell Project Overview
+
+### General Flow
+
+The `minishell` project is a simplified reimplementation of a Unix shell. It processes user input step by step, transforming a raw line into executable processes while handling builtins, redirections, and pipelines.
+
+1. **Readline**
+
+   * Displays the prompt (`minishell$ `).
+   * Captures user input with editing and history features.
+   * Returns the full input line for processing.
+
+2. **Tokenizer**
+
+   * Splits the raw input into tokens (commands, arguments, operators like `|`, `<`, `>`).
+   * Handles quotes, escaped characters, and syntax rules.
+   * Ensures special symbols are separate tokens.
+
+3. **Parser / Struct Filler**
+
+   * Organizes tokens into structured commands (`t_command`, `t_redir`).
+   * Detects syntax errors (e.g., pipes without commands, missing filenames).
+   * Builds a linked list of commands ready for execution.
+
+4. **Executor**
+
+   * Runs parsed commands one by one or in pipelines.
+   * Differentiates between builtins (executed in the parent shell) and external programs (via `fork` + `execve`).
+   * Handles input/output redirections and pipes.
+   * Manages process statuses and error reporting.
+
+5. **Builtins**
+
+   * Internal commands like `cd`, `echo`, `pwd`, `export`, `unset`, and `exit`.
+   * Some must run inside the parent shell (`cd`, `export`, etc.).
+   * Must mimic the behavior of real bash builtins as closely as possible.
+
+### Edge Cases to Consider
+
+* Empty input or just spaces → shell continues without errors.
+* Syntax errors (`|`, `>`, or `>>` used incorrectly) → error message, no crash.
+* Redirections without target files → syntax error.
+* Multiple pipes and redirections combined.
+* Signals (`Ctrl+C`, `Ctrl+D`) handled gracefully.
+
+### Testing Checklist
+
+1. Simple commands (`ls`, `pwd`).
+2. Builtins (`cd`, `exit`, `export`).
+3. Pipelines (`ls | wc -l`).
+4. Redirections (`cat < infile > outfile`).
+5. Combined (`grep foo < infile | sort | uniq > outfile`).
+6. Error handling (unknown commands, permission issues).
+7. Interactive signals (`Ctrl+C`, `Ctrl+D`, `Ctrl+\`).
+
+
+## Visión General del Proyecto Minishell
+
+### Flujo General
+
+El proyecto `minishell` es una reimplementación simplificada de un shell Unix. Procesa la entrada del usuario paso a paso, transformando una línea de texto en procesos ejecutables, gestionando builtins, redirecciones y tuberías.
+
+1. **Readline**
+
+   * Muestra el prompt (`minishell$ `).
+   * Captura la entrada del usuario con edición e historial.
+   * Devuelve la línea completa para procesarla.
+
+2. **Tokenizador**
+
+   * Divide la entrada en tokens (comandos, argumentos, operadores como `|`, `<`, `>`).
+   * Maneja comillas, caracteres escapados y reglas de sintaxis.
+   * Asegura que los símbolos especiales sean tokens independientes.
+
+3. **Parser / Relleno de Estructuras**
+
+   * Organiza los tokens en comandos estructurados (`t_command`, `t_redir`).
+   * Detecta errores de sintaxis (ej. pipes sin comandos, falta de archivo).
+   * Construye una lista enlazada de comandos lista para ejecutarse.
+
+4. **Ejecutor**
+
+   * Ejecuta los comandos parseados uno por uno o en pipelines.
+   * Distingue entre builtins (ejecutados en el shell padre) y programas externos (con `fork` + `execve`).
+   * Maneja redirecciones de entrada/salida y tuberías.
+   * Gestiona estados de procesos y mensajes de error.
+
+5. **Builtins**
+
+   * Comandos internos como `cd`, `echo`, `pwd`, `export`, `unset` y `exit`.
+   * Algunos deben ejecutarse en el shell padre (`cd`, `export`, etc.).
+   * Deben imitar el comportamiento de bash lo más fielmente posible.
+
+### Casos Especiales a Considerar
+
+* Entrada vacía o solo espacios → el shell continúa sin errores.
+* Errores de sintaxis (`|`, `>`, `>>` mal usados) → mensaje de error, sin crash.
+* Redirecciones sin archivo destino → error de sintaxis.
+* Combinaciones de múltiples pipes y redirecciones.
+* Señales (`Ctrl+C`, `Ctrl+D`) gestionadas de forma correcta.
+
+### Lista de Pruebas
+
+1. Comandos simples (`ls`, `pwd`).
+2. Builtins (`cd`, `exit`, `export`).
+3. Pipelines (`ls | wc -l`).
+4. Redirecciones (`cat < infile > outfile`).
+5. Combinados (`grep foo < infile | sort | uniq > outfile`).
+6. Manejo de errores (comandos desconocidos, permisos).
+7. Señales interactivas (`Ctrl+C`, `Ctrl+D`, `Ctrl+\`).

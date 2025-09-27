@@ -1,0 +1,46 @@
+## `readline`
+
+### Overview
+
+`readline` is a library function used to read a full line of input from the user. In `minishell`, it is responsible for displaying the prompt (e.g., `minishell$ `), capturing what the user types, and returning it as a string. It also integrates features like command history, line editing, and handling `Ctrl+D` (EOF).
+
+### Edge Cases
+
+* **Empty input (user presses Enter)** → returns an empty string.
+* **End-of-file (`Ctrl+D`)** → `readline` returns `NULL`; the shell must handle this gracefully (e.g., exit).
+* **Memory allocation failures** → rare, but `readline` may return `NULL`.
+* **Signals (`Ctrl+C`)** → `readline` resets the line, does not terminate the shell.
+* **History handling** → repeated commands can be accessed with arrow keys; must be managed if you use `add_history`.
+
+### Things to Test For
+
+1. Pressing Enter on an empty line → input should not crash or produce undefined behavior.
+2. `Ctrl+D` at the prompt → shell should exit cleanly.
+3. `Ctrl+C` during typing → shell should reset to a new prompt without exiting.
+4. Long inputs (several thousand characters) → ensure the buffer handles them.
+5. Command history navigation with arrow keys → should retrieve previous inputs.
+6. Memory leaks → verify freed input strings after each loop iteration.
+
+
+## `readline`
+
+### Descripción General
+
+`readline` es una función de librería que lee una línea completa de entrada del usuario. En `minishell`, se encarga de mostrar el prompt (por ejemplo, `minishell$ `), capturar lo que el usuario escribe y devolverlo como una cadena. También integra funcionalidades como historial de comandos, edición de línea y manejo de `Ctrl+D` (EOF).
+
+### Casos Especiales
+
+* **Entrada vacía (usuario pulsa Enter)** → devuelve una cadena vacía.
+* **Fin de fichero (`Ctrl+D`)** → `readline` devuelve `NULL`; el shell debe manejarlo correctamente (por ejemplo, salir).
+* **Fallo de asignación de memoria** → poco común, pero `readline` puede devolver `NULL`.
+* **Señales (`Ctrl+C`)** → `readline` reinicia la línea, no termina el shell.
+* **Manejo del historial** → comandos repetidos accesibles con flechas; deben gestionarse si se usa `add_history`.
+
+### Cosas a Probar
+
+1. Pulsar Enter en una línea vacía → no debe causar crash ni comportamiento indefinido.
+2. `Ctrl+D` en el prompt → el shell debe salir limpiamente.
+3. `Ctrl+C` mientras se escribe → el shell debe reiniciar el prompt sin salir.
+4. Entradas largas (miles de caracteres) → comprobar que el buffer las maneja.
+5. Navegación del historial con flechas → debe recuperar entradas anteriores.
+6. Fugas de memoria → verificar liberación de cadenas tras cada iteración del bucle.

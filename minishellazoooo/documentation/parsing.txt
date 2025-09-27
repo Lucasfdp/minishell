@@ -1,0 +1,46 @@
+## Parser / Struct Filler
+
+### Overview
+
+The parser takes the list of tokens and builds structured representations of commands. It organizes tokens into commands, arguments, pipes, and redirections, filling the internal data structures (`t_command`, `t_redir`, etc.). This is crucial for execution.
+
+### Edge Cases
+
+* **Pipes with no command before/after** → syntax error.
+* **Redirection with no target file** → syntax error.
+* **Multiple consecutive redirections** → must be parsed correctly.
+* **Mixing quotes and operators** → must be distinguished properly.
+* **Empty commands in pipeline** → must be flagged as invalid.
+
+### Things to Test For
+
+1. `ls -l` → one command with args.
+2. `ls | wc` → two commands linked by a pipe.
+3. `cat < infile > outfile` → one command with input and output redirections.
+4. `grep "foo" < infile | sort` → quotes + redirection + pipe.
+5. `ls || wc` → syntax error (double pipe not supported).
+6. `echo >` → syntax error (no filename).
+
+
+## Parser / Relleno de Estructuras
+
+### Descripción General
+
+El parser toma la lista de tokens y construye representaciones estructuradas de los comandos. Organiza los tokens en comandos, argumentos, pipes y redirecciones, rellenando las estructuras internas (`t_command`, `t_redir`, etc.). Esto es esencial para la ejecución.
+
+### Casos Especiales
+
+* **Pipes sin comando antes o después** → error de sintaxis.
+* **Redirección sin archivo destino** → error de sintaxis.
+* **Múltiples redirecciones consecutivas** → deben parsearse correctamente.
+* **Mezcla de comillas y operadores** → deben distinguirse correctamente.
+* **Comandos vacíos en un pipeline** → deben marcarse como inválidos.
+
+### Cosas a Probar
+
+1. `ls -l` → un comando con argumentos.
+2. `ls | wc` → dos comandos enlazados por un pipe.
+3. `cat < infile > outfile` → un comando con redirección de entrada y salida.
+4. `grep "foo" < infile | sort` → comillas + redirección + pipe.
+5. `ls || wc` → error de sintaxis (doble pipe no soportado).
+6. `echo >` → error de sintaxis (sin nombre de archivo).

@@ -1,0 +1,46 @@
+## Builtin: `exit`
+
+### Overview
+
+`exit` terminates the shell process. It can accept an optional numeric status code that becomes the shell’s exit status.
+
+### Edge Cases
+
+* **No arguments** → exit with the last command’s status.
+* **One numeric argument** → exit with that code (converted modulo 256).
+* **Non-numeric argument** → error message and exit with status 255.
+* **More than one argument** → print error and do not exit.
+* **In subshells** → exits only the subshell, not the main shell.
+
+### Things to Test For
+
+1. `exit` → terminates shell with last status.
+2. `exit 0` → exits with success.
+3. `exit 42` → exits with code 42.
+4. `exit -5` → exits with adjusted code (`251`).
+5. `exit notanumber` → error, exit 255.
+6. `exit 1 2` → error, shell does not exit.
+
+
+## Builtin: `exit`
+
+### Resumen
+
+`exit` termina el proceso de la shell. Puede recibir un argumento numérico opcional que se usa como código de salida.
+
+### Casos Especiales
+
+* **Sin argumentos** → sale con el estado del último comando.
+* **Un argumento numérico** → sale con ese código (ajustado módulo 256).
+* **Argumento no numérico** → error y sale con estado 255.
+* **Más de un argumento** → error y no sale.
+* **En subshells** → termina solo el subshell, no la shell principal.
+
+### Casos a Probar
+
+1. `exit` → termina la shell con el último estado.
+2. `exit 0` → sale con éxito.
+3. `exit 42` → sale con código 42.
+4. `exit -5` → sale con código ajustado (`251`).
+5. `exit notanumber` → error, salida 255.
+6. `exit 1 2` → error, la shell no termina.

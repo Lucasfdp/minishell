@@ -1,0 +1,46 @@
+## Builtin: `echo`
+
+### Overview
+
+`echo` prints its arguments to standard output, separated by spaces, followed by a newline by default. It is used for simple text output inside the shell. The option `-n` suppresses the trailing newline.
+
+### Edge Cases
+
+* **No arguments** → prints only a newline (unless `-n`).
+* **`-n` flag** → may appear multiple times (`-n`, `-nnnn`); must suppress newline.
+* **Arguments with quotes** → quotes should be stripped by tokenizer, not `echo`.
+* **Escape sequences** → not handled in minishell (Bash has `echo -e` but that’s outside scope).
+* **Empty strings** → still produce spacing behavior.
+
+### Things to Test For
+
+1. `echo hello world` → prints `hello world\n`.
+2. `echo` → prints `\n`.
+3. `echo -n hello` → prints `hello` without newline.
+4. `echo -nnnn hi` → prints `hi` without newline.
+5. `echo "hello   world"` → prints `hello   world\n`.
+6. `echo ""` → prints just `\n`.
+
+
+## Builtin: `echo`
+
+### Resumen
+
+`echo` imprime sus argumentos en la salida estándar, separados por espacios, seguido de un salto de línea por defecto. El flag `-n` elimina el salto de línea final.
+
+### Casos Especiales
+
+* **Sin argumentos** → imprime solo un salto de línea (a menos que use `-n`).
+* **Flag `-n`** → puede aparecer varias veces (`-n`, `-nnnn`); siempre elimina el salto de línea.
+* **Argumentos con comillas** → las comillas se eliminan en la tokenización, no en `echo`.
+* **Secuencias de escape** → minishell no debe manejarlas (`echo -e` pertenece a Bash).
+* **Cadenas vacías** → aún afectan la separación con espacios.
+
+### Casos a Probar
+
+1. `echo hola mundo` → imprime `hola mundo\n`.
+2. `echo` → imprime `\n`.
+3. `echo -n hola` → imprime `hola` sin salto de línea.
+4. `echo -nnnn hola` → imprime `hola` sin salto de línea.
+5. `echo "hola   mundo"` → imprime `hola   mundo\n`.
+6. `echo ""` → imprime solo `\n`.

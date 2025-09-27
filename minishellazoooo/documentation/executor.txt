@@ -1,0 +1,52 @@
+## Executor
+
+### Overview
+
+The executor runs the parsed commands. It manages process creation, redirections, pipelines, and execution of builtins vs external programs. It is the stage that translates structures into actual processes.
+
+### Edge Cases
+
+* **Builtins without forking (`cd`, `export`, etc.)** → must run in the parent shell.
+* **External commands** → executed via `fork` + `execve`.
+* **Pipelines** → multiple processes connected with pipes.
+* **Redirections** → correct file handling (open, dup2, close).
+* **Command not found** → must print an error and return 127.
+* **Permission denied** → must print error and return 126.
+* **Signals (e.g., Ctrl+C)** → must update exit status correctly.
+
+### Things to Test For
+
+1. Simple command: `ls` → executes and prints output.
+2. Builtin: `cd` → changes directory in the shell.
+3. Pipeline: `ls | wc` → output flows through pipe.
+4. Redirections: `echo hi > file` → writes to file.
+5. Error: `nosuchcommand` → error + exit status 127.
+6. Permission denied: `./file_without_x` → error + exit status 126.
+7. Combination: `grep foo < infile | sort > outfile`.
+
+
+## Ejecutor
+
+### Descripción General
+
+El ejecutor se encarga de ejecutar los comandos parseados. Gestiona la creación de procesos, redirecciones, tuberías y la diferencia entre builtins y programas externos. Es la etapa que traduce las estructuras en procesos reales.
+
+### Casos Especiales
+
+* **Builtins sin fork (`cd`, `export`, etc.)** → deben ejecutarse en el shell padre.
+* **Comandos externos** → se ejecutan con `fork` + `execve`.
+* **Pipelines** → varios procesos conectados mediante pipes.
+* **Redirecciones** → manejo correcto de ficheros (open, dup2, close).
+* **Comando no encontrado** → debe imprimir error y devolver 127.
+* **Permiso denegado** → debe imprimir error y devolver 126.
+* **Señales (ej. Ctrl+C)** → deben actualizar correctamente el estado de salida.
+
+### Cosas a Probar
+
+1. Comando simple: `ls` → ejecuta y muestra salida.
+2. Builtin: `cd` → cambia de directorio en el shell.
+3. Pipeline: `ls | wc` → salida fluye a través del pipe.
+4. Redirecciones: `echo hola > fichero` → escribe en fichero.
+5. Error: `comandoinexistente` → error + código 127.
+6. Permiso denegado: `./archivo_sin_x` → error + código 126.
+7. Combinación: `grep foo < infile | sort > outfile`.

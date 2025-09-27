@@ -16,29 +16,29 @@ extern void rl_redisplay(void);
 
 typedef enum e_redir_type
 {
-    REDIR_NONE = -1,
-    REDIR_IN = 0,
-    REDIR_OUT,
-    REDIR_APPEND,
-    REDIR_HEREDOC
+	REDIR_NONE = -1,
+	REDIR_IN = 0,
+	REDIR_OUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC
 }   t_redir_type;
 
 typedef struct s_redir
 {
-    t_redir_type    type;
-    char            *file;
-    struct s_redir  *next;
+	t_redir_type    type;
+	char            *file;
+	struct s_redir  *next;
 }   t_redir;
 
 typedef struct s_command t_command;
 
 struct s_command
 {
-    char      **args;
-    int        input_fd;
-    int        output_fd;
-    t_redir   *redirs;
-    t_command *next;
+	char        **args;
+	int         input_fd;
+	int         output_fd;
+	t_redir     *redirs;
+	t_command   *next;
 };
 
 typedef struct s_shell

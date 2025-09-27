@@ -1,0 +1,50 @@
+## Tokeniser
+
+### Overview
+
+The tokenizer is responsible for breaking the raw input string (from `readline`) into meaningful tokens. Tokens represent commands, arguments, operators (`|`, `<`, `>`, etc.), and delimiters. It prepares the data for parsing by ensuring that the shell can distinguish between words and special symbols.
+
+### Edge Cases
+
+* **Empty input** → tokeniser should return an empty token list.
+* **Consecutive spaces/tabs** → ignored, should not produce empty tokens.
+* **Quoted strings (`"..."`, `'...'`)** → must preserve content exactly, including spaces.
+* **Unclosed quotes** → should trigger a syntax error.
+* **Operators (`|`, `<`, `>`, `<<`, `>>`)** → must be recognized as separate tokens.
+* **Escaped characters (`\`)** → may need correct interpretation depending on rules.
+
+### Things to Test For
+
+1. Simple command: `ls -l` → tokens: [`ls`, `-l`].
+2. Multiple spaces: `ls    -l` → tokens: [`ls`, `-l`].
+3. Pipes: `ls | wc` → tokens: [`ls`, `|`, `wc`].
+4. Redirections: `cat < infile > outfile` → tokens: [`cat`, `<`, `infile`, `>`, `outfile`].
+5. Quotes: `echo "hello world"` → tokens: [`echo`, `hello world`].
+6. Unclosed quote: `echo "hello` → syntax error.
+7. Empty input: press Enter → no tokens, shell continues.
+
+
+## Tokenizador
+
+### Descripción General
+
+El tokenizador se encarga de dividir la cadena de entrada (de `readline`) en tokens significativos. Los tokens representan comandos, argumentos, operadores (`|`, `<`, `>`, etc.) y delimitadores. Prepara los datos para el parser, asegurando que el shell pueda distinguir entre palabras y símbolos especiales.
+
+### Casos Especiales
+
+* **Entrada vacía** → debe devolver una lista de tokens vacía.
+* **Espacios/tabulaciones consecutivos** → ignorados, no deben generar tokens vacíos.
+* **Cadenas entre comillas (`"..."`, `'...'`)** → conservar el contenido exacto, incluidos los espacios.
+* **Comillas no cerradas** → deben producir un error de sintaxis.
+* **Operadores (`|`, `<`, `>`, `<<`, `>>`)** → deben reconocerse como tokens separados.
+* **Caracteres escapados (`\`)** → deben interpretarse correctamente según las reglas.
+
+### Cosas a Probar
+
+1. Comando simple: `ls -l` → tokens: [`ls`, `-l`].
+2. Múltiples espacios: `ls    -l` → tokens: [`ls`, `-l`].
+3. Pipes: `ls | wc` → tokens: [`ls`, `|`, `wc`].
+4. Redirecciones: `cat < infile > outfile` → tokens: [`cat`, `<`, `infile`, `>`, `outfile`].
+5. Comillas: `echo "hola mundo"` → tokens: [`echo`, `hola mundo`].
+6. Comilla no cerrada: `echo "hola` → error de sintaxis.
+7. Entrada vacía: pulsar Enter → sin tokens, el shell continúa.

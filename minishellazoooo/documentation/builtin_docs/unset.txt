@@ -1,0 +1,40 @@
+## Builtin: `unset`
+
+### Overview
+
+`unset` removes variables from the environment so they are no longer inherited by child processes.
+
+### Edge Cases
+
+* **Nonexistent variable** → should not cause error, just no effect.
+* **Invalid identifiers** → must print error message.
+* **Multiple arguments** → should handle each independently.
+
+### Things to Test For
+
+1. `unset VAR` → variable removed from environment.
+2. `unset VAR1 VAR2` → removes both if exist.
+3. `unset 1ABC` → error for invalid identifier.
+4. `unset` with no args → does nothing.
+5. After `unset VAR`, check with `env` to confirm removal.
+
+
+## Builtin: `unset`
+
+### Resumen
+
+`unset` elimina variables del entorno para que los procesos hijos no las hereden.
+
+### Casos Especiales
+
+* **Variable inexistente** → no genera error, simplemente no hace nada.
+* **Identificadores inválidos** → deben mostrar error.
+* **Múltiples argumentos** → cada uno debe procesarse de manera independiente.
+
+### Casos a Probar
+
+1. `unset VAR` → elimina la variable.
+2. `unset VAR1 VAR2` → elimina ambas si existen.
+3. `unset 1ABC` → error por identificador inválido.
+4. `unset` sin args → no hace nada.
+5. Comprobar con `env` que la variable fue eliminada.

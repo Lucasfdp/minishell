@@ -1,0 +1,59 @@
+## Builtin: `cd`
+
+### Overview
+
+The `cd` (change directory) builtin updates the shell’s current working directory. Because the working directory is part of the shell’s internal state, this command cannot be delegated to an external program. A correct implementation ensures environment variables like `PWD` and `OLDPWD` stay consistent, enabling commands such as `cd -` or relative path operations to work properly.
+
+### Edge Cases
+
+* **No arguments** → defaults to `$HOME`; if `$HOME` is not set, an error must be reported.
+* **Argument is `-`** → switch to `$OLDPWD`, printing the new path; error if `$OLDPWD` is unset.
+* **Too many arguments** → should trigger an error rather than attempting ambiguous behavior.
+* **Invalid paths** → nonexistent directories, files instead of directories, or permission issues should produce clear error messages.
+* **Unset or inaccessible `PWD`** → handle gracefully if environment tracking gets out of sync.
+* **Use in pipelines/subshells** → changing directory in a child process does not affect the parent shell.
+* **Symbolic links** → whether to resolve or preserve symlinks affects how `PWD` is updated (most minishells resolve with `getcwd`).
+
+### Things to Test For
+
+1. `cd /` → verify `PWD` updates to `/` and `OLDPWD` updates correctly.
+2. `cd` with `$HOME` set → navigates to home; `$HOME` unset → error.
+3. `cd -` with `$OLDPWD` set → changes to it and prints it; unset → error.
+4. `cd ..` → navigates to parent directory.
+5. `cd non_existent_dir` → prints “No such file or directory” and sets error status.
+6. `cd /root` (without permission) → prints “Permission denied” and sets error status.
+7. `cd` with multiple arguments → prints “too many arguments.”
+8. `cd` in a pipeline (e.g., `echo hi | cd /tmp`) → does not affect parent shell directory.
+9. `cd` into a path containing spaces → works if tokenizer handled quotes properly.
+10. After every successful `cd`, confirm `PWD` and `OLDPWD` are updated and exported to the environment.
+
+
+
+## Builtin: `cd`
+
+### Resumen
+
+El builtin `cd` (change directory) cambia el directorio de trabajo actual de la shell. Como este directorio forma parte del estado interno de la shell, no puede delegarse a un programa externo. Una implementación correcta mantiene las variables de entorno `PWD` y `OLDPWD` consistentes, lo que permite que comandos como `cd -` o rutas relativas funcionen adecuadamente.
+
+### Casos Especiales
+
+* **Sin argumentos** → usa `$HOME`; si no está definido, debe mostrar error.
+* **Argumento `-`** → cambia a `$OLDPWD` y muestra la ruta; error si `$OLDPWD` no existe.
+* **Demasiados argumentos** → debe producir error en vez de comportamiento ambiguo.
+* **Rutas inválidas** → directorios inexistentes, archivos en lugar de carpetas, o permisos insuficientes deben generar mensajes claros de error.
+* **`PWD` no definido o inaccesible** → manejar con cuidado para evitar inconsistencias.
+* **Uso en pipelines/subshells** → cambiar directorio en un proceso hijo no afecta a la shell padre.
+* **Enlaces simbólicos** → decidir si se resuelven (con `getcwd`) o se mantienen afecta cómo se actualiza `PWD`.
+
+### Casos a Probar
+
+1. `cd /` → comprobar que `PWD` cambia a `/` y `OLDPWD` se actualiza.
+2. `cd` con `$HOME` definido → va al home; si `$HOME` no está → error.
+3. `cd -` con `$OLDPWD` definido → cambia y lo imprime; si no → error.
+4. `cd ..` → sube al directorio padre.
+5. `cd no_existe` → “No such file or directory” y estado de error.
+6. `cd /root` (sin permisos) → “Permission denied” y estado de error.
+7. `cd` con varios argumentos → “too many arguments.”
+8. `cd` en un pipeline (`echo hi | cd /tmp`) → no cambia el directorio de la shell padre.
+9. `cd` a una ruta con espacios → funciona si el tokenizer procesó bien las comillas.
+10. Después de cada `cd` exitoso, verificar que `PWD` y `OLDPWD` se actualicen y exporten al entorno.
