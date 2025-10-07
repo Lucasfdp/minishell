@@ -1,14 +1,27 @@
 #include "libft.h"
 
-void    free_array(char **map, int lines)
+void	free_map(char **map, int lines)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (i < lines)
-    {
-        free(map[i]);
-        i++;
-    }
-    free(map);
+	i = 0;
+	while (i < lines)
+	{
+		free(map[i]);
+		i++;
+	}
+	free(map);
+}
+
+void	free_array(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }

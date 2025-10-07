@@ -3,19 +3,12 @@
 
 # include "minishell.h"
 
-// typedef struct s_shell
-// {
-// 	char	**env;
-// }	t_shell;
-
-// typedef struct s_tokens
-// {
-
-// }	t_tokens;
 typedef struct s_shell t_shell;
 
+typedef struct s_command t_command;
+
 //builtins
-void	execute_builtins(char *input, t_shell *shell);
+void	execute_builtins(t_command *cmd, t_shell *shell);
 void	execute_echo(char **args);
 void	execute_pwd(void);
 void	execute_env(char **envp_shell);

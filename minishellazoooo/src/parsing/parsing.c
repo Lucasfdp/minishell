@@ -1,7 +1,6 @@
 #include "parsing.h"
 #include "minishell.h"
 
-
 t_command	*init_command()
 {
 	t_command *command;
@@ -35,6 +34,38 @@ int	add_command(t_shell *shell, t_command *command)
 	return (1);
 }
 
+void prepare_hd_file(int pipe_fd[2], char *limiter)
+{
+    char *line;
+
+    while ((line = get_next_line(0)))
+    {
+        size_t len = ft_strlen(line);
+        if (len > 0 && line[len - 1] == '\n')
+            line[len - 1] = '\0';
+        if (ft_strcmp(line, limiter) == 0)
+        {
+            free(line);
+            break;
+        }
+        write(pipe_fd[1], line, ft_strlen(line));
+        write(pipe_fd[1], "\n", 1);
+        free(line);
+    }
+}
+
+void prep_fds_heredoc(t_command *cmd, char *limiter)
+{
+    int pipe_fd[2];
+
+    if (pipe(pipe_fd) == -1)
+        error_exit("pipe", 1);
+    prepare_hd_file(pipe_fd, limiter);
+    close(pipe_fd[1]);              // close writer
+    cmd->input_fd = pipe_fd[0];     // keep reader
+}
+
+
 t_redir_type	is_redir(char *token)
 {
 	if (ft_strncmp(token, "<", 2) == 0)
@@ -57,8 +88,11 @@ int	add_redir(t_command *command, t_redir_type type, char *file_token)
 	redir = (t_redir *)malloc(sizeof(t_redir));
 	if (!redir)
 		return (0);
-	redir->file = ft_strdup(file_token);
 	redir->type = type;
+	if (type == REDIR_HEREDOC)
+		prep_fds_heredoc(command, file_token);
+	else 
+		redir->file = ft_strdup(file_token);
 	redir_last = command->redirs;
 	redir->next = NULL;
 	if (!redir_last)
@@ -122,7 +156,7 @@ char	**add_arg(char **cmd_args, char *arg)
 		new_args[j] = ft_strdup(cmd_args[j]);
 	new_args[i] = ft_strdup(arg);
 	new_args[i + 1] = NULL;
-	free_array(cmd_args, array_len(cmd_args));
+	free_map(cmd_args, array_len(cmd_args));
 	return (new_args);
 }
 

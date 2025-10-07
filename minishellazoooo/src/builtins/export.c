@@ -1,5 +1,40 @@
 #include "builtins.h"
 
+int	count_matrix(char **matrix)
+{
+	int	i;
+
+	i = 0;
+	while (matrix[i])
+		i++;
+	return (i);
+}
+
+char	**order_env(char **env)
+{
+	char	**sorted_env;
+	char	*temp;
+	int		i;
+	int		env_len;
+
+	sorted_env = copy_matrix(env);
+	env_len = count_matrix(sorted_env);
+	i = 0;
+	while (i < env_len - 1)
+	{
+		if (ft_strcmp(sorted_env[i], sorted_env[i + 1]) > 0)
+		{
+			temp = sorted_env[i];
+			sorted_env[i] = sorted_env[i + 1];
+			sorted_env[i + 1] = temp;
+			i = 0;
+		}
+		else
+			i++;
+	}
+	return (sorted_env);
+}
+
 char	*extract_key(char *var)
 {
 	int		i;
@@ -39,6 +74,7 @@ char	**append_to_env(char **env, char *new_var)
 	new_env[i] = ft_strdup(new_var);
 	new_env[i + 1] = NULL;
 	free(env);
+	free_array(env);
 	return (new_env);
 }
 
@@ -65,23 +101,27 @@ void	print_export(char **env)
 {
 	int		i;
 	char	*equal_sign;
+	char	**sorted_env;
 
 	i = 0;
-	while (env[i])
+	sorted_env = order_env(env);
+	while (sorted_env[i])
 	{
 		printf("declare -x ");
-		equal_sign = ft_strchr(env[i], '=');
+		equal_sign = ft_strchr(sorted_env[i], '=');
 		if (equal_sign)
 		{
 			*equal_sign = '\0';
-			printf("%s=\"%s\"\n", env[i], equal_sign + 1);
+			printf("%s=\"%s\"\n", sorted_env[i], equal_sign + 1);
 			*equal_sign = '=';
 		}
 		else
-			printf("%s\n", env[i]);
+			printf("%s\n", sorted_env[i]);
 		i++;
 	}
+	free_array(sorted_env);
 }
+
 
 void	execute_export(char **args, char ***env)
 {

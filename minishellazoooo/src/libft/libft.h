@@ -6,7 +6,7 @@
 /*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/08/28 00:15:29 by lucas            ###   ########.fr       */
+/*   Updated: 2025/10/04 02:43:41 by lucas            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,9 @@ char	*add_line(char *storage);
 char	*clean(char *storage);
 
 //so_long
-void    free_array(char **map, int lines);
+void    free_map(char **map, int lines);
 char	**copy_matrix(char **matrix);
 
+//freeing
+void	free_array(char **array);
 #endif

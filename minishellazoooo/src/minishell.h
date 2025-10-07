@@ -46,6 +46,8 @@ typedef struct s_shell
 	char	    **env;
 	int		    last_status;
 	char	    **tokens;
+	int			**pipes;
+	int			num_cmds;
 	t_command	*commands;
 }	t_shell;
 
@@ -55,5 +57,11 @@ typedef struct s_shell
 char 	*read_input(const char *prompt);
 void 	setup_signals(void);
 void 	handle_sigint(int sig);
+
+// freeing functions
+void	free_redirs(t_redir *lst);
+void	free_commands(t_command *lst);
+void    free_shell(t_shell *shell);
+void	error_exit(const char *msg, int error_num);;
 
 #endif
