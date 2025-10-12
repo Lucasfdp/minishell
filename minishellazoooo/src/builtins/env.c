@@ -24,3 +24,5 @@ int	find_env_index(char **env, char *key)
 	}
 	return (-1);
 }
+
+// potentially change _var name from minishellazooo to env

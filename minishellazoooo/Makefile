@@ -6,7 +6,8 @@ SRC_DIR = src
 LIBFT_DIR = $(SRC_DIR)/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=address\
+#-g -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror \
 	-I$(READLINE_PATH)/include \
 	-I$(SRC_DIR) \
 	-I$(LIBFT_DIR)
@@ -29,7 +30,7 @@ SRCS = main.c \
 	$(BUILTINS_DIR)/exit.c \
 	$(PARSING_DIR)/parsing.c \
 	$(PARSING_DIR)/tokeniser.c \
-	$(EXECUTOR_DIR)/exec2.c
+	$(EXECUTOR_DIR)/executor.c
 
 OBJS = $(SRCS:.c=.o)
 

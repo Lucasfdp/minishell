@@ -1,0 +1,4 @@
+cat <<EOF | grep hi
+hi
+bye
+EOF

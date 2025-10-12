@@ -1,299 +1,296 @@
-// #include "executor.h"
+#include "executor.h"
 
-// // void	duppy(int fd_input, int fd_output)
-// // {
-// // 	if (dup2(fd_input, STDIN_FILENO) == -1)
-// // 		error_exit("dup2 input", 1);
-// // 	if (dup2(fd_output, STDOUT_FILENO) == -1)
-// // 		error_exit("dup2 output", 1);
-// // 	if (fd_input != STDIN_FILENO)
-// // 		close(fd_input);
-// // 	if (fd_output != STDOUT_FILENO)
-// // 		close(fd_output);
-// // }
+char	*get_path_from_env(char **envp)
+{
+	int	i;
 
-// // void	close_pipe_fds(t_pinfo *pinfo)
-// // {
-// // 	int	i;
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
+		i++;
+	}
+	return (NULL);
+}
 
-// // 	i = 0;
-// // 	while (i < pinfo->num_cmds - 1)
-// // 	{
-// // 		close(pinfo->pipes[i][0]);
-// // 		close(pinfo->pipes[i][1]);
-// // 		i++;
-// // 	}
-// // }
+char	*try_paths(char **split_paths, char *cmd)
+{
+	char	*tmp;
+	char	*full_path;
+	int		i;
 
-// // void	exec_child(char *cmd, int fd_input, int fd_output, t_pinfo *pinfo)
-// // {
-// // 	char	**args;
-// // 	char	*cmd_path;
+	i = 0;
+	while (split_paths[i])
+	{
+		tmp = ft_strjoin(split_paths[i], "/");
+		full_path = ft_strjoin(tmp, cmd);
+		free(tmp);
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
+		free(full_path);
+		i++;
+	}
+	return (NULL);
+}
 
-// // 	duppy(fd_input, fd_output);
-// // 	if (pinfo->pipes)
-// // 		close_pipe_fds(pinfo);
-// // 	args = ft_split(cmd, ' ');
-// // 	if (!args || !args[0])
-// // 		error_exit("Invalid command", 127);
-// // 	cmd_path = get_cmd_path(args[0], pinfo->envp);
-// // 	if (!cmd_path)
-// // 	{
-// // 		free_array(args, -1);
-// // 		error_exit("command not found", 127);
-// // 	}
-// // 	execve(cmd_path, args, pinfo->envp);
-// // 	if (access(cmd_path, X_OK) != 0)
-// // 	{
-// // 		free(cmd_path);
-// // 		free_array(args, -1);
-// // 		error_exit("execve failed", 126);
-// // 	}
-// // 	free(cmd_path);
-// // 	free_array(args, -1);
-// // 	error_exit("execve failed", 1);
-// // }
+char	*get_cmd_path(t_shell *shell, t_command *cmd)
+{
+	char	**split_paths;
+	char	*path;
+	char	*result;
 
-// // void	exec_single_command(t_pinfo *pinfo, pid_t pid, int i)
-// // {
-// // 	pid = fork();
-// // 	if (pid < 0)
-// // 		error_exit("fork failed", 1);
-// // 	if (pid == 0)
-// // 	{
-// // 		if (i == 0)
-// // 		{
-// // 			if (pinfo->num_cmds > 1)
-// // 			{
-// // 				close(pinfo->pipes[i][0]);
-// // 				exec_child(pinfo->cmds[i], pinfo->infile, pinfo->pipes[i][1],
-// // 					pinfo);
-// // 			}
-// // 			else
-// // 				exec_child(pinfo->cmds[i], pinfo->infile, pinfo->outfile,
-// // 					pinfo);
-// // 		}
-// // 		else if (i == pinfo->num_cmds - 1)
-// // 			exec_child(pinfo->cmds[i], pinfo->pipes[i - 1][0], pinfo->outfile,
-// // 				pinfo);
-// // 		else
-// // 			exec_child(pinfo->cmds[i], pinfo->pipes[i - 1][0],
-// // 				pinfo->pipes[i][1], pinfo);
-// // 	}
-// // }
+	if (ft_strchr(cmd->args[0], '/'))
+	{
+		if (access(cmd->args[0], X_OK) == 0)
+			return (ft_strdup(cmd->args[0]));
+		return (NULL);
+	}
+	path = get_path_from_env(shell->env);
+	if (!path)
+		return (NULL);
+	split_paths = ft_split(path, ':');
+	if (!split_paths)
+		return (NULL);
+	result = try_paths(split_paths, cmd->args[0]);
+	free_array(split_paths);
+	return (result);
+}
 
-// // void	exec_all(t_pinfo *pinfo, pid_t *pids)
-// // {
-// // 	int	i;
+int	ft_lstsize_2(t_command *lst)
+{
+	int			count;
+	t_command	*temp;
 
-// // 	i = -1;
-// // 	while (++i < pinfo->num_cmds)
-// // 		exec_single_command(pinfo, pids[i], i);
-// // }
+	count = 0;
+	temp = lst;
+	while (temp != NULL)
+	{
+		count++;
+		temp = temp->next;
+	}
+	return (count);
+}
 
-// // void	execute_commands(t_shell *shell)
-// // {
-// // 	int		i;
-// // 	pid_t	*pids;
-// // 	int		num_cmds;
+void	duppy(int fd_input, int fd_output)
+{
+	if (dup2(fd_input, STDIN_FILENO) == -1)
+		error_exit("dup2 input", 1);
+	if (dup2(fd_output, STDOUT_FILENO) == -1)
+		error_exit("dup2 output", 1);
+	if (fd_input != STDIN_FILENO)
+		close(fd_input);
+	if (fd_output != STDOUT_FILENO)
+		close(fd_output);
+}
 
-// // 	num_cmds = ft_lstsize(shell->commands);
-// // 	pids = malloc(sizeof(pid_t) * num_cmds - 1);
-// // 	if (!pids)
-// // 		error_exit("malloc failed", 1);
-// // 	exec_all(shell, pids);
-// // 	i = -1;
-// // 	while (++i < num_cmds - 1)
-// // 	{
-// // 		close(pinfo->pipes[i][0]);
-// // 		close(pinfo->pipes[i][1]);
-// // 	}
-// // 	close(pinfo->infile);
-// // 	close(pinfo->outfile);
-// // 	i = -1;
-// // 	while (++i < pinfo->num_cmds)
-// // 		waitpid(pids[i], NULL, 0);
-// // 	free(pids);
-// // }
+void	apply_redirs(t_command *cmd)
+{
+	t_redir	*r;
+	int		fd;
 
-// void	closing_and_freeing_stuff(t_pinfo *pinfo)
-// {
-// 	int	i;
+	r = cmd->redirs;
+	while (r)
+	{
+		if (r->type == REDIR_OUT) // >
+		{
+			fd = open(r->file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
+			if (fd < 0)
+				error_exit(r->file, 1);
+			if (dup2(fd, STDOUT_FILENO) == -1)
+				error_exit("dup2", 1);
+			close(fd);
+		}
+		else if (r->type == REDIR_APPEND) // >>
+		{
+			fd = open(r->file, O_CREAT | O_APPEND | O_WRONLY, 0644);
+			if (fd < 0)
+				error_exit(r->file, 1);
+			if (dup2(fd, STDOUT_FILENO) == -1)
+				error_exit("dup2", 1);
+			close(fd);
+		}
+		else if (r->type == REDIR_IN) // <
+		{
+			fd = open(r->file, O_RDONLY);
+			if (fd < 0)
+				error_exit(r->file, 1);
+			if (dup2(fd, STDIN_FILENO) == -1)
+				error_exit("dup2", 1);
+			close(fd);
+		}
+		else if (r->type == REDIR_HEREDOC)
+	{
+		if (dup2(r->heredoc_fd, STDIN_FILENO) == -1)
+			error_exit("dup2 heredoc", 1);
+		close(r->heredoc_fd);
+	}
+		r = r->next;
+	}
+}
 
-// 	i = -1;
-// 	if (pinfo->infile >= 0)
-// 		close(pinfo->infile);
-// 	if (pinfo->outfile >= 0)
-// 		close(pinfo->outfile);
-// 	while (++i < pinfo->num_cmds - 1)
-// 	{
-// 		close(pinfo->pipes[i][0]);
-// 		close(pinfo->pipes[i][1]);
-// 	}
-// 	i = -1;
-// 	while (pinfo->pipes[++i])
-// 		free(pinfo->pipes[i]);
-// }
+bool	has_heredoc(t_command *cmd)
+{
+	t_redir *r;
 
-// void	error_exit(const char *msg, int error_num)
-// {
-// 	if (error_num == 0)
-// 	{
-// 		ft_printf("%s\n", msg);
-// 		exit(1);
-// 	}
-// 	else
-// 	{
-// 		perror(msg);
-// 		exit(error_num);
-// 	}
-// }
+	r = cmd->redirs;
+	while (r)
+	{
+		if (r->type == REDIR_HEREDOC)
+			return true;
+		r = r->next;
+	}
+	return false;
+}
 
-// char	*get_path_from_env(char **envp)
-// {
-// 	int	i;
+void	setup_pipes(t_shell *shell)
+{
+	int			i;
+	t_command	*cmd;
 
-// 	i = 0;
-// 	while (envp[i])
-// 	{
-// 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-// 			return (envp[i] + 5);
-// 		i++;
-// 	}
-// 	return (NULL);
-// }
+	i = 0;
+	shell->num_cmds = ft_lstsize_2(shell->commands);
+	if (shell->num_cmds < 2)
+		return;
+	shell->pipes = malloc(sizeof(int *) * (shell->num_cmds - 1));
+	if (!shell->pipes)
+		error_exit("malloc pipes", 1);
 
-// char	*try_paths(char **split_paths, char *cmd)
-// {
-// 	char	*tmp;
-// 	char	*full_path;
-// 	int		i;
+	while (i < shell->num_cmds - 1)
+	{
+		shell->pipes[i] = malloc(sizeof(int) * 2);
+		if (!shell->pipes[i] || pipe(shell->pipes[i]) == -1)
+			error_exit("pipe", 1);
+		i++;
+	}
+	cmd = shell->commands;
+	i = 0;
+	while (cmd)
+	{
+		// First command
+		if (i == 0 && shell->num_cmds > 1)
+			cmd->output_fd = shell->pipes[0][1];
+		// Last command
+		else if (i == shell->num_cmds - 1 && shell->num_cmds > 1)
+			cmd->input_fd = shell->pipes[i - 1][0];
+		// Middle commands
+		else if (shell->num_cmds > 2)
+		{
+			cmd->input_fd = shell->pipes[i - 1][0];
+			cmd->output_fd = shell->pipes[i][1];
+		}
 
-// 	i = 0;
-// 	while (split_paths[i])
-// 	{
-// 		tmp = ft_strjoin_pipex(split_paths[i], "/");
-// 		full_path = ft_strjoin_pipex(tmp, cmd);
-// 		free(tmp);
-// 		if (access(full_path, X_OK) == 0)
-// 			return (full_path);
-// 		free(full_path);
-// 		i++;
-// 	}
-// 	return (NULL);
-// }
+		cmd = cmd->next;
+		i++;
+	}
+}
 
-// char	*get_cmd_path(char *cmd, char **envp)
-// {
-// 	char	**split_paths;
-// 	char	*path;
-// 	char	*result;
+void close_all_pipes(t_shell *shell)
+{
+	int i = 0;
 
-// 	if (ft_strchr(cmd, '/'))
-// 	{
-// 		if (access(cmd, X_OK) == 0)
-// 			return (ft_strdup(cmd));
-// 		return (NULL);
-// 	}
-// 	path = get_path_from_env(envp);
-// 	if (!path)
-// 		return (NULL);
-// 	split_paths = ft_split(path, ':');
-// 	if (!split_paths)
-// 		return (NULL);
-// 	result = try_paths(split_paths, cmd);
-// 	free_array(split_paths, -1);
-// 	return (result);
-// }
+	while (i < shell->num_cmds - 1)
+	{
+		close(shell->pipes[i][0]);
+		close(shell->pipes[i][1]);
+		i++;
+	}
+}
 
-// void	prep_fds(int ac, char **av, t_pinfo *pinfo)
-// {
-// 	pinfo->infile = open(av[1], O_RDONLY);
-// 	if (pinfo->infile < 0)
-// 		error_exit("infile", 1);
-// 	pinfo->outfile = open(av[ac - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-// 	if (pinfo->outfile < 0)
-// 		error_exit("outfile", 1);
-// }
+int	detect_builtin(char *str)
+{
+	if (ft_strcmp(str, "cd") == 0)
+		return (1);
+	else if (ft_strcmp(str, "echo") == 0)
+		return (1);
+	else if (ft_strcmp(str, "env") == 0)
+		return (1);
+	else if (ft_strcmp(str, "exit") == 0)
+		return (1);
+	else if (ft_strcmp(str, "export") == 0)
+		return (1);
+	else if (ft_strcmp(str, "pwd") == 0)
+		return (1);
+	else if (ft_strcmp(str, "unset") == 0)
+		return (1);
+	return (0);
+}
 
-// void	prepare_hd_file(char *line, int pipe_fd[2], char *limiter)
-// {
-// 	int	line_len;
+void	exec_child(t_shell *shell, t_command *cmd)
+{
+	int	i = 0;
 
-// 	line = get_next_line(0);
-// 	while (line)
-// 	{
-// 		line_len = ft_int_strlen(line);
-// 		if (line[line_len - 1] == '\n')
-// 			line[line_len - 1] = '\0';
-// 		if (ft_strcmp(line, limiter) == 0)
-// 			break ;
-// 		write(pipe_fd[1], line, line_len);
-// 		write(pipe_fd[1], "\n", 1);
-// 		free(line);
-// 		line = get_next_line(0);
-// 	}
-// }
+	// Close all pipe FDs not used by this child
+	while (i < shell->num_cmds - 1)
+	{
+		if (shell->pipes[i][0] != cmd->input_fd)
+			close(shell->pipes[i][0]);
+		if (shell->pipes[i][1] != cmd->output_fd)
+			close(shell->pipes[i][1]);
+		i++;
+	}
 
-// void	prep_fds_heredoc(int ac, char **av, t_pinfo *pinfo)
-// {
-// 	int		pipe_fd[2];
-// 	char	*line;
-// 	char	*limiter;
+	// Apply redirections (may override input/output)
+	if (cmd->redirs)
+		apply_redirs(cmd);
 
-// 	line = NULL;
-// 	limiter = av[2];
-// 	if (pipe(pipe_fd) == -1)
-// 		error_exit("pipe", 1);
-// 	prepare_hd_file(line, pipe_fd, limiter);
-// 	free(line);
-// 	close(pipe_fd[1]);
-// 	pinfo->infile = pipe_fd[0];
-// 	pinfo->outfile = open(av[ac - 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
-// 	if (pinfo->outfile < 0)
-// 		error_exit("outfile", 1);
-// }
+	// Duplicate final input/output
+	if (cmd->input_fd != STDIN_FILENO)
+		if (dup2(cmd->input_fd, STDIN_FILENO) == -1)
+			error_exit("dup2 input", 1);
+	if (cmd->output_fd != STDOUT_FILENO)
+		if (dup2(cmd->output_fd, STDOUT_FILENO) == -1)
+			error_exit("dup2 output", 1);
 
-// int	prep_pipes(t_pinfo *pinfo)
-// {
-// 	int	i;
+	// Execute
+	if (detect_builtin(cmd->args[0]))
+		execute_builtins(cmd, shell);
+	else
+	{
+		char *cmd_path = get_cmd_path(shell, cmd);
+		if (!cmd_path)
+			error_exit("command not found", 127);
+		execve(cmd_path, cmd->args, shell->env);
+		perror("execve");
+		free(cmd_path);
+		exit(126);
+	}
+}
 
-// 	i = 0;
-// 	pinfo->pipes = malloc(sizeof(int *) * (pinfo->num_cmds - 1));
-// 	if (!pinfo->pipes)
-// 		return (0);
-// 	while (i < pinfo->num_cmds - 1)
-// 	{
-// 		pinfo->pipes[i] = malloc(sizeof(int) * 2);
-// 		if (!pinfo->pipes[i])
-// 			return (0);
-// 		if (pipe(pinfo->pipes[i]) == -1)
-// 			error_exit("pipe", 1);
-// 		i++;
-// 	}
-// 	return (1);
-// }
+void	execute_commands(t_shell *shell)
+{
+	pid_t		*pids;
+	t_command	*cmd;
+	int			i;
 
-// int	prep_info(int ac, char **av, t_pinfo *pinfo, int heredoc)
-// {
-// 	if (heredoc)
-// 	{
-// 		pinfo->num_cmds = ac - 4;
-// 		pinfo->cmds = copy_matrix_range(av, 3, ac - 2);
-// 	}
-// 	else
-// 	{
-// 		pinfo->num_cmds = ac - 3;
-// 		pinfo->cmds = copy_matrix_range(av, 2, ac - 2);
-// 	}
-// 	if (!pinfo->cmds)
-// 		return (0);
-// 	if (pinfo->num_cmds > 1)
-// 	{
-// 		if (!prep_pipes(pinfo))
-// 			return (0);
-// 	}
-// 	else
-// 		pinfo->pipes = NULL;
-// 	return (1);
-// }
+	shell->num_cmds = ft_lstsize_2(shell->commands);
+	pids = malloc(sizeof(pid_t) * shell->num_cmds);
+	if (!pids)
+		error_exit("malloc pids", 1);
+
+	if (shell->num_cmds > 1)
+		setup_pipes(shell);
+
+	cmd = shell->commands;
+	i = 0;
+	while (cmd)
+	{
+		pids[i] = fork();
+		if (pids[i] < 0)
+			error_exit("fork", 1);
+		if (pids[i] == 0)
+			exec_child(shell, cmd);
+		cmd = cmd->next;
+		i++;
+	}
+	if (shell->num_cmds > 1)
+		close_all_pipes(shell);
+
+	i = 0;
+	while (i < shell->num_cmds)
+	{
+		waitpid(pids[i], NULL, 0);
+		i++;
+	}
+	free(pids);
+}

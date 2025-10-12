@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/04 02:43:41 by lucas            ###   ########.fr       */
+/*   Updated: 2025/10/08 04:28:19 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ int 	ft_putstr_fd_pf(char  *str, int fd);
 int 	ft_putnbr_base_fd(unsigned long nbr, char *base, int fd);
 int 	ft_put_ptr_fd(void *ptr, int fd);
 int 	ft_printf(const char *format, ...);
+int		ft_fprintf(int fd, const char *format, ...);
+
 
 //gnl
 # ifndef BUFFER_SIZE

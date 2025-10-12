@@ -1,5 +1,20 @@
 #include "minishell.h"
 
+void free_token_list(t_token **tokens)
+{
+    int i = 0;
+    if (!tokens)
+        return;
+    while (tokens[i])
+    {
+        if (tokens[i]->value)
+            free(tokens[i]->value);
+        free(tokens[i]);
+        i++;
+    }
+    free(tokens);
+}
+
 void free_array_shell(char **arr)
 {
     if (!arr)

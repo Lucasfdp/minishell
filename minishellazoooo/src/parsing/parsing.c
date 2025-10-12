@@ -54,17 +54,16 @@ void prepare_hd_file(int pipe_fd[2], char *limiter)
     }
 }
 
-void prep_fds_heredoc(t_command *cmd, char *limiter)
+void prep_fds_heredoc(t_redir *redir, char *limiter)
 {
     int pipe_fd[2];
 
     if (pipe(pipe_fd) == -1)
         error_exit("pipe", 1);
     prepare_hd_file(pipe_fd, limiter);
-    close(pipe_fd[1]);              // close writer
-    cmd->input_fd = pipe_fd[0];     // keep reader
+    close(pipe_fd[1]);
+    redir->heredoc_fd = pipe_fd[0];
 }
-
 
 t_redir_type	is_redir(char *token)
 {
@@ -90,7 +89,10 @@ int	add_redir(t_command *command, t_redir_type type, char *file_token)
 		return (0);
 	redir->type = type;
 	if (type == REDIR_HEREDOC)
-		prep_fds_heredoc(command, file_token);
+	{
+		prep_fds_heredoc(redir, file_token);
+		redir->file = ft_strdup(file_token);
+	}
 	else 
 		redir->file = ft_strdup(file_token);
 	redir_last = command->redirs;
@@ -160,52 +162,259 @@ char	**add_arg(char **cmd_args, char *arg)
 	return (new_args);
 }
 
-void	fill_structs(t_shell *shell, char **tokens)
+t_token_type get_token_type(char *token)
 {
-	int			i;
-	int			type;
-	t_command	*command;
+    if (!token)
+        return TOKEN_WORD;
+    if (ft_strcmp(token, "|") == 0)
+        return TOKEN_PIPE;
+    else if (ft_strcmp(token, "<") == 0)
+        return TOKEN_REDIR_IN;
+    else if (ft_strcmp(token, ">") == 0)
+        return TOKEN_REDIR_OUT;
+    else if (ft_strcmp(token, ">>") == 0)
+        return TOKEN_REDIR_APPEND;
+    else if (ft_strcmp(token, "<<") == 0)
+        return TOKEN_HEREDOC;
+    return TOKEN_WORD;
+}
 
-	i = 0;
-	command = init_command();
-	if (!command)
-		return ; // error stuffs
+void	syntax_error_unexpected_token(const char *token, const char *cmd)
+{
+	if (token)
+		ft_fprintf(STDERR_FILENO,
+			"bash: -c: line 0: syntax error near unexpected token `%s'\n",
+			token);
+	else
+		ft_fprintf(STDERR_FILENO,
+			"bash: -c: line 0: syntax error near unexpected token `newline'\n");
+
+	// Only print second line when bash would show the full input line
+	if (cmd)
+		ft_fprintf(STDERR_FILENO, "bash: -c: line 0: `%s'\n", cmd);
+}
+
+// returns false if invalid
+bool validate_tokens(char **tokens, const char *cmdline)
+{
+	int i = 0;
+	t_token_type prev = TOKEN_NONE;
+
 	while (tokens[i])
 	{
-		if (ft_strncmp(tokens[i], "|", 2) == 0)
+		t_token_type curr = get_token_type(tokens[i]);
+
+		// PIPE at start or consecutive
+		if (curr == TOKEN_PIPE)
 		{
-			// finalize and append command
+			if (i == 0 || prev == TOKEN_PIPE)
+			{
+				syntax_error_unexpected_token("|", cmdline); // two-line bash output
+				return false;
+			}
+		}
+
+		// HEREDOC without a word after
+		if (curr == TOKEN_HEREDOC)
+		{
+			if (!tokens[i + 1] || get_token_type(tokens[i + 1]) != TOKEN_WORD)
+			{
+				syntax_error_unexpected_token(tokens[i + 1], NULL); // one-line bash output
+				return false;
+			}
+		}
+
+		// REDIRECTIONS without a word after
+		if (curr == TOKEN_REDIR_IN || curr == TOKEN_REDIR_OUT || curr == TOKEN_REDIR_APPEND)
+		{
+			if (!tokens[i + 1] || get_token_type(tokens[i + 1]) != TOKEN_WORD)
+			{
+				syntax_error_unexpected_token(tokens[i + 1], cmdline); // two-line bash output
+				return false;
+			}
+		}
+
+		prev = curr;
+		i++;
+	}
+
+	// Cannot end with a pipe
+	if (prev == TOKEN_PIPE)
+	{
+		syntax_error_unexpected_token(NULL, cmdline); // two-line bash output
+		return false;
+	}
+
+	return true;
+}
+
+void fill_structs(t_shell *shell, char **tokens)
+{
+	int i = 0;
+	int type;
+	t_command *command = init_command();
+	t_token_type prev_type = TOKEN_NONE;
+
+	if (!command)
+		return;
+
+	while (tokens[i])
+	{
+		type = is_redir(tokens[i]);
+
+		// PIPE handling
+		if (ft_strcmp(tokens[i], "|") == 0)
+		{
 			if (!command->args && !command->redirs)
 			{
-				// syntax error (empty command before pipe)
+				syntax_error_unexpected_token("|", shell->input); // two-line
 				free(command);
-				return ;
+				shell->exit_status = 2;
+				return;
 			}
 			add_command(shell, command);
 			command = init_command();
 			if (!command)
-				return ;
+				return;
+			prev_type = TOKEN_PIPE;
 			i++;
 			continue;
 		}
-		type = is_redir(tokens[i]);
-		if (type != REDIR_NONE)
+
+		// HEREDOC handling
+		if (type == REDIR_HEREDOC)
 		{
-			if (!tokens[i + 1])
+			if (!tokens[i + 1] || is_redir(tokens[i + 1]) != REDIR_NONE)
 			{
-				// syntax error: missing filename
+				syntax_error_unexpected_token(tokens[i + 1], NULL); // one-line
 				free(command);
-				return ;
+				shell->exit_status = 2;
+				return;
 			}
 			add_redir(command, type, tokens[i + 1]);
 			i += 2;
 			continue;
 		}
+
+		// OTHER redirections: <, >, >>
+		if (type == REDIR_IN || type == REDIR_OUT || type == REDIR_APPEND)
+		{
+			if (!tokens[i + 1] || is_redir(tokens[i + 1]) != REDIR_NONE)
+			{
+				syntax_error_unexpected_token(tokens[i + 1], shell->input); // two-line
+				free(command);
+				shell->exit_status = 2;
+				return;
+			}
+			add_redir(command, type, tokens[i + 1]);
+			i += 2;
+			continue;
+		}
+
+		// NORMAL ARGUMENT
 		command->args = add_arg(command->args, tokens[i]);
+		prev_type = TOKEN_WORD;
 		i++;
 	}
+
+	// Cannot end with a pipe
+	if (prev_type == TOKEN_PIPE)
+	{
+		syntax_error_unexpected_token(NULL, shell->input); // two-line
+		free(command);
+		shell->exit_status = 2;
+		return;
+	}
+
+	// Append last command if it has args or redirections
 	if (command->args || command->redirs)
 		add_command(shell, command);
 	else
 		free(command);
 }
+
+// void fill_structs(t_shell *shell, char **tokens)
+// {
+//     int i = 0;
+//     t_command *command = init_command();
+//     t_token_type prev_type = TOKEN_NONE;
+//     int type;
+
+//     if (!command)
+//         return;
+
+//     while (tokens[i])
+//     {
+//         type = is_redir(tokens[i]);
+
+//         // PIPE
+//         if (ft_strcmp(tokens[i], "|") == 0)
+//         {
+//             if (!command->args && !command->redirs)
+//             {
+//                 syntax_error_unexpected_token("|", shell->input);
+//                 free(command);
+//                 shell->exit_status = 2;
+//                 return;
+//             }
+//             add_command(shell, command);
+//             command = init_command();
+//             if (!command)
+//                 return;
+//             prev_type = TOKEN_PIPE;
+//             i++;
+//             continue;
+//         }
+
+//         // HEREDOC
+//         if (type == REDIR_HEREDOC)
+//         {
+//             if (!tokens[i + 1] || is_redir(tokens[i + 1]) != REDIR_NONE)
+//             {
+//                 syntax_error_unexpected_token(tokens[i + 1], NULL);
+//                 free(command);
+//                 shell->exit_status = 2;
+//                 return;
+//             }
+//             add_redir(command, type, tokens[i + 1]);
+//             i += 2;
+//             continue;
+//         }
+
+//         // OTHER REDIRECTIONS
+//         if (type == REDIR_IN || type == REDIR_OUT || type == REDIR_APPEND)
+//         {
+//             if (!tokens[i + 1] || is_redir(tokens[i + 1]) != REDIR_NONE)
+//             {
+//                 syntax_error_unexpected_token(tokens[i + 1], shell->input);
+//                 free(command);
+//                 shell->exit_status = 2;
+//                 return;
+//             }
+//             add_redir(command, type, tokens[i + 1]);
+//             i += 2;
+//             continue;
+//         }
+
+//         // NORMAL ARG
+//         if (tokens[i] && ft_strlen(tokens[i]) > 0)
+//             command->args = add_arg(command->args, tokens[i]);
+
+//         prev_type = TOKEN_WORD;
+//         i++;
+//     }
+
+//     // Cannot end with PIPE
+//     if (prev_type == TOKEN_PIPE)
+//     {
+//         syntax_error_unexpected_token(NULL, shell->input);
+//         free(command);
+//         shell->exit_status = 2;
+//         return;
+//     }
+
+//     if (command->args || command->redirs)
+//         add_command(shell, command);
+//     else
+//         free(command);
+// }

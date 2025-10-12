@@ -1,0 +1,5 @@
+--- ./tests/tmp/bash.out	2025-10-10 09:43:49
++++ ./tests/tmp/mini.out	2025-10-10 09:43:49
+@@ -1 +1 @@
+-hi
++./tests/test2.sh: line 33: ../minishell: No such file or directory

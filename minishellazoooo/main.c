@@ -51,8 +51,8 @@ void print_shell(t_shell *shell)
 	int cmd_index = 1;
 
 	printf("Shell:\n");
-	printf("  last_status: %d\n", shell->last_status);
-
+	printf("  last_status: %d\n", shell->exit_status);
+	printf("%s\n", shell->input);
 	printf("  tokens: ");
 	if (shell->tokens)
 	{
@@ -80,19 +80,45 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	char	*input;
 	t_shell	shell;
+	t_token **tokens;
 
 	shell.env = copy_matrix(envp);
-	shell.last_status = 0;
+	shell.exit_status = 0;
 	while (1)
 	{
 		shell.commands = NULL;
-		input = read_input("minishell$ ");
+		//input = read_input("minishell$ ");
+		input = read_input2();
 		if (!input)
 			break;
-		//execute_builtins(input, &shell);
-		shell.tokens = tokeniser(input);
-		fill_structs(&shell, shell.tokens);
+		// shell.input = ft_strdup(input);
+		// tokens = tokeniser(input);
+		// expand_tokens(&shell, tokens);
+		// shell.tokens = tokens_to_argv(tokens);
+		// fill_structs(&shell, shell.tokens);
 		// print_shell(&shell);
+		shell.input = ft_strdup(input);
+		tokens = tokeniser(input);
+		if (!tokens)
+		{
+			free(shell.input);
+			shell.input = NULL;
+			free(input);
+			continue;
+		}
+		expand_tokens(&shell, tokens);
+		shell.tokens = tokens_to_argv(tokens);
+		if (!validate_tokens(shell.tokens, shell.input))
+		{
+			free_array(shell.tokens);
+			free_token_list(tokens);
+			free(shell.input);
+			shell.input = NULL;
+			free(input);
+			continue;
+		}
+	    fill_structs(&shell, shell.tokens);
+	    free_token_list(tokens);
 		execute_commands(&shell);
 		//free_shell(&shell);
 		if (input)
@@ -100,3 +126,4 @@ int	main(int ac, char **av, char **envp)
 	}
 	return (0);
 }
+

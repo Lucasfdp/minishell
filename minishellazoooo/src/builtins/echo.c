@@ -21,7 +21,7 @@ void	execute_echo(char **args)
 			if (args[i + 1])
 				output = ft_strjoin_gnl(output, " ");
 		}
-		printf("%s", output);
+		ft_fprintf(STDOUT_FILENO, "%s", output);
 	}
 	else
 	{	
@@ -31,6 +31,6 @@ void	execute_echo(char **args)
 			if (args[i + 1])
 				output = ft_strjoin_gnl(output, " ");
 		}
-		printf("%s\n",output);
+		ft_fprintf(STDOUT_FILENO, "%s\n",output);
 	}
 }

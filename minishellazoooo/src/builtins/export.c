@@ -73,8 +73,8 @@ char	**append_to_env(char **env, char *new_var)
 		new_env[j] = env[j];
 	new_env[i] = ft_strdup(new_var);
 	new_env[i + 1] = NULL;
+	//free_array(env);
 	free(env);
-	free_array(env);
 	return (new_env);
 }
 
