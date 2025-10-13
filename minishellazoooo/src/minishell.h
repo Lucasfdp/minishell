@@ -3,6 +3,8 @@
 
 # include "libft/libft.h"
 # include <stdio.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <unistd.h>

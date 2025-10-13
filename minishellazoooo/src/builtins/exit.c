@@ -13,6 +13,7 @@ void	execute_exit(char **args, t_shell *shell)
 	else if (args[1] && args[2])
 	{
 		ft_fprintf(STDERR_FILENO, "exit: too many arguments\n");
+		free(shell->input);
 		shell->exit_status = 1;
 	}
 	else if (args[1])
@@ -29,6 +30,7 @@ void	execute_exit(char **args, t_shell *shell)
 		}
 		//printf("exit\n");
 		shell->exit_status = ft_atoi(args[1]) % 256;
+		free_shell(shell);
 		exit(shell->exit_status);
 	}
 }

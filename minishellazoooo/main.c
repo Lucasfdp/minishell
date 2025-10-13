@@ -120,10 +120,12 @@ int	main(int ac, char **av, char **envp)
 	    fill_structs(&shell, shell.tokens);
 	    free_token_list(tokens);
 		execute_commands(&shell);
-		//free_shell(&shell);
+		free_shell(&shell);
 		if (input)
 			free(input);
 	}
+	free_array(shell.env);
+	free_shell(&shell);
 	return (0);
 }
 

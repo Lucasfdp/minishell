@@ -1,0 +1,16 @@
+hola
+[?2004hminishell$ [?2004l
+lslskddjdjd
+[?2004hminishell$ ^C[?2004l
+minishell$ [?2004hecho lslskddjdjd >> outfile.txt [C[C[C[C[C[C[C[C[C[C[C[C[Cjo[Keoeoeoeo^C[?2004l
+minishell$ [?2004h^C[?2004l
+minishell$ [?2004h^C[?2004l
+minishell$ [?2004h^C[?2004l
+minishell$ [?2004h
+[?2004l[?2004hminishell$ 
+[?2004l[?2004hminishell$ 
+[?2004l[?2004hminishell$ 
+[?2004l[?2004hminishell$ 
+[?2004l[?2004hminishell$ 
+[?2004l[?2004hminishell$ [?2004l
+exit
