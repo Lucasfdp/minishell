@@ -1,10 +1,24 @@
 #include "builtins.h"
 
-void	execute_exit(char **args, t_shell *shell)
+void	check_digit(char **args, t_shell *shell)
 {
 	int		i;
 
 	i = 0;
+	while (args[1][i])
+	{
+		if (!ft_isdigit(args[1][i]))
+		{
+			ft_fprintf(STDERR_FILENO, "exit: numeric argument required\n");
+			shell->exit_status = 2;
+			exit(2);
+		}
+		i++;
+	}
+}
+
+void	execute_exit(char **args, t_shell *shell)
+{
 	if (!args[1])
 	{
 		ft_fprintf(STDERR_FILENO, "exit\n");
@@ -17,17 +31,7 @@ void	execute_exit(char **args, t_shell *shell)
 	}
 	else if (args[1])
 	{
-		while (args[1][i])
-		{
-			if (!ft_isdigit(args[1][i]))
-			{
-				ft_fprintf(STDERR_FILENO, "exit: numeric argument required\n");
-				shell->exit_status = 2;
-				exit(2);
-			}
-			i++;
-		}
-		//printf("exit\n");
+		check_digit(args, shell);
 		shell->exit_status = ft_atoi(args[1]) % 256;
 		exit(shell->exit_status);
 	}

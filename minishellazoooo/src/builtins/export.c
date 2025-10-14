@@ -1,40 +1,5 @@
 #include "builtins.h"
 
-int	count_matrix(char **matrix)
-{
-	int	i;
-
-	i = 0;
-	while (matrix[i])
-		i++;
-	return (i);
-}
-
-char	**order_env(char **env)
-{
-	char	**sorted_env;
-	char	*temp;
-	int		i;
-	int		env_len;
-
-	sorted_env = copy_matrix(env);
-	env_len = count_matrix(sorted_env);
-	i = 0;
-	while (i < env_len - 1)
-	{
-		if (ft_strcmp(sorted_env[i], sorted_env[i + 1]) > 0)
-		{
-			temp = sorted_env[i];
-			sorted_env[i] = sorted_env[i + 1];
-			sorted_env[i + 1] = temp;
-			i = 0;
-		}
-		else
-			i++;
-	}
-	return (sorted_env);
-}
-
 char	*extract_key(char *var)
 {
 	int		i;
@@ -59,7 +24,7 @@ char	*extract_key(char *var)
 char	**append_to_env(char **env, char *new_var)
 {
 	int		i;
-	int 	j;
+	int		j;
 	char	**new_env;
 
 	i = 0;
@@ -73,7 +38,6 @@ char	**append_to_env(char **env, char *new_var)
 		new_env[j] = env[j];
 	new_env[i] = ft_strdup(new_var);
 	new_env[i + 1] = NULL;
-	//free_array(env);
 	free(env);
 	return (new_env);
 }
@@ -85,7 +49,7 @@ void	set_env_var(char ***env, char *new_var)
 
 	key = extract_key(new_var);
 	if (!key)
-		return;
+		return ;
 	idx = find_env_index(*env, key);
 	if (idx >= 0)
 	{
@@ -122,7 +86,6 @@ void	print_export(char **env)
 	free_array(sorted_env);
 }
 
-
 void	execute_export(char **args, char ***env)
 {
 	int	i;
@@ -130,7 +93,7 @@ void	execute_export(char **args, char ***env)
 	if (!args[1])
 	{
 		print_export(*env);
-		return;
+		return ;
 	}
 	i = 1;
 	while (args[i])

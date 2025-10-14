@@ -10,6 +10,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "builtins/builtins.h"
+# include "executor/executor.h"
+# include "parsing/parsing.h"
 
 extern void rl_replace_line(const char *text, int clear_undo);
 extern int rl_on_new_line(void);
