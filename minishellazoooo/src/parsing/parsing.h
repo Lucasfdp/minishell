@@ -3,10 +3,18 @@
 
 # include "minishell.h"
 
+typedef enum e_token_type t_token_type;
+
+typedef struct s_token t_token;
+
+typedef enum e_redir_type t_redir_type;
+
+
+
 int				count_tokens(char *input);
 t_token			**tokeniser(char *input);
 char			**tokens_to_argv(t_token **tokens);
-char			*expand_variables(t_shell *shell, char *token);
+char			*expand_variables(t_shell *shell, char *token, int in_double);
 void			expand_tokens(t_shell *shell, t_token **tokens);
 t_command		*init_command();
 int				add_command(t_shell *shell, t_command *command);

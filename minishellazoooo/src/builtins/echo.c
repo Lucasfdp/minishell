@@ -1,5 +1,19 @@
 #include "builtins.h"
 
+char	*join_args(char **args, int *i)
+{
+	char	*output;
+
+	output = ft_strdup("");
+	while (args[++(*i)])
+	{
+		output = ft_strjoin_gnl(output, args[(*i)]);
+		if (args[(*i) + 1])
+			output = ft_strjoin_gnl(output, " ");
+	}
+	return (output);
+}
+
 void	execute_echo(char **args)
 {
 	char	*output;
@@ -15,22 +29,12 @@ void	execute_echo(char **args)
 	if (ft_strncmp(args[1], "-n", 3) == 0)
 	{
 		i = 1;
-		while (args[++i])
-		{
-			output = ft_strjoin_gnl(output, args[i]);
-			if (args[i + 1])
-				output = ft_strjoin_gnl(output, " ");
-		}
+		output = join_args(args, &i);
 		ft_fprintf(STDOUT_FILENO, "%s", output);
 	}
 	else
-	{	
-		while(args[++i])
-		{
-			output = ft_strjoin_gnl(output, args[i]);
-			if (args[i + 1])
-				output = ft_strjoin_gnl(output, " ");
-		}
-		ft_fprintf(STDOUT_FILENO, "%s\n",output);
+	{
+		output = join_args(args, &i);
+		ft_fprintf(STDOUT_FILENO, "%s\n", output);
 	}
 }

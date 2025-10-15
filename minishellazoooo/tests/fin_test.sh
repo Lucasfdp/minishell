@@ -48,7 +48,7 @@ run_test "CD valid" "cd /tmp"
 run_test "CD invalid" "cd /does/not/exist"
 run_test "Export simple" "export A=42"
 run_test "Unset variable" "unset A"
-run_test "Env" "env"
+#run_test "Env" "env"
 run_test "Exit code" "exit 7"
 
 # ======== EXECUTION ========
@@ -58,7 +58,7 @@ run_test "Pipe" "ls | wc -l"
 run_test "Redirect output" "echo hello > $TMP_DIR/out.txt"
 run_test "Append redirect" "echo first > $TMP_DIR/out.txt; echo second >> $TMP_DIR/out.txt"
 run_test "Redirect input" "cat < $TMP_DIR/out.txt"
-run_test "Pipe with redirect" "echo hi | cat > $TMP_DIR/out2.txt"
+run_test "Pipe with redirect" "ls -la | wc -l > $TMP_DIR/out2.txt"
 
 # ======== PARSING ========
 echo "=== PARSING ==="

@@ -30,7 +30,11 @@ SRCS = main.c \
 	$(BUILTINS_DIR)/exit.c \
 	$(PARSING_DIR)/parsing.c \
 	$(PARSING_DIR)/tokeniser.c \
-	$(EXECUTOR_DIR)/executor.c
+	$(EXECUTOR_DIR)/executor.c \
+	$(EXECUTOR_DIR)/exec2.c \
+	$(EXECUTOR_DIR)/exec3.c
+
+
 
 OBJS = $(SRCS:.c=.o)
 
