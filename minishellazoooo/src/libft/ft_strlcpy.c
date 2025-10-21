@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lucas <lucas@student.42.fr>                +#+  +:+       +#+        */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 12:51:55 by luferna3          #+#    #+#             */
-/*   Updated: 2025/06/21 19:42:20 by lucas            ###   ########.fr       */
+/*   Updated: 2025/10/21 22:05:14 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ char	*ft_strncpy(char *dest, char *src, int size)
 	}
 	return (dest);
 }
-
 
 // int	main(void)
 // {

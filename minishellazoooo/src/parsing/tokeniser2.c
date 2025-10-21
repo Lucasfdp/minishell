@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokeniser2.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:54:42 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:54:43 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
-int	handle_operator(char *input, int i, t_token **tokens, int j)
+int	handle_operator(char *input, int i, t_tok_state *ts)
 {
 	char	op[3];
 
@@ -19,32 +31,33 @@ int	handle_operator(char *input, int i, t_token **tokens, int j)
 		op[0] = input[i++];
 		op[1] = '\0';
 	}
-	tokens[j] = malloc(sizeof(t_token));
-	tokens[j]->value = ft_strdup(op);
-	tokens[j]->in_single = 0;
-	tokens[j]->in_double = 0;
+	ts->tokens[*(ts->index)] = malloc(sizeof(t_token));
+	ts->tokens[*(ts->index)]->value = ft_strdup(op);
+	ts->tokens[*(ts->index)]->in_single = 0;
+	ts->tokens[*(ts->index)]->in_double = 0;
+	(*(ts->index))++;
 	return (i);
 }
 
-int	process_backslash(char *input, int i, char *buf, int *k, int dq)
+int	process_backslash(char *input, int i, t_buf_state *bs, int dq)
 {
 	i++;
 	if (input[i])
 	{
 		if (!dq || input[i] == '$' || input[i] == '"'
 			|| input[i] == '\\' || input[i] == '`')
-			buf[(*k)++] = input[i];
+			bs->buf[(*(bs->k))++] = input[i];
 		else
-			buf[(*k)++] = '\\';
+			bs->buf[(*(bs->k))++] = '\\';
 		i++;
 	}
 	return (i);
 }
 
-int	process_word_char(char *in, int i, char *buf, int *k, t_quote_state *qs)
+int	process_word_char(char *in, int i, t_buf_state *bs, t_quote_state *qs)
 {
 	if (in[i] == '\\')
-		return (process_backslash(in, i, buf, k, qs->double_q));
+		return (process_backslash(in, i, bs, qs->double_q));
 	else if (in[i] == '\'' && !qs->double_q)
 	{
 		qs->single_q = !qs->single_q;
@@ -57,18 +70,21 @@ int	process_word_char(char *in, int i, char *buf, int *k, t_quote_state *qs)
 	}
 	else if (!qs->single_q && !qs->double_q && is_operator_char(in[i]))
 		return (i);
-	buf[(*k)++] = in[i];
+	bs->buf[(*(bs->k))++] = in[i];
 	return (i + 1);
 }
 
 int	extract_word_to_buf(char *in, int i, char *buf, t_quote_state *qs)
 {
-	int	k;
+	int				k;
+	t_buf_state		bs;
 
 	k = 0;
+	bs.buf = buf;
+	bs.k = &k;
 	while (in[i] && (!ft_isspace(in[i]) || qs->single_q || qs->double_q))
 	{
-		i = process_word_char(in, i, buf, &k, qs);
+		i = process_word_char(in, i, &bs, qs);
 		if (!qs->single_q && !qs->double_q && is_operator_char(in[i]))
 			break ;
 	}
@@ -76,10 +92,11 @@ int	extract_word_to_buf(char *in, int i, char *buf, t_quote_state *qs)
 	return (i);
 }
 
-void	create_token_from_buf(char *buf, t_token **tokens, int j, int ss, int sd)
+void	create_token_from_buf(char *buf, t_tok_state *ts, t_quote_flags *qf)
 {
-	tokens[j] = malloc(sizeof(t_token));
-	tokens[j]->value = ft_strdup(buf);
-	tokens[j]->in_single = ss;
-	tokens[j]->in_double = sd;
+	ts->tokens[*(ts->index)] = malloc(sizeof(t_token));
+	ts->tokens[*(ts->index)]->value = ft_strdup(buf);
+	ts->tokens[*(ts->index)]->in_single = qf->in_single;
+	ts->tokens[*(ts->index)]->in_double = qf->in_double;
+	(*(ts->index))++;
 }

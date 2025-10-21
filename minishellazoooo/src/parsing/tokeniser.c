@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokeniser.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:54:49 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:54:50 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 void	init_quotes_and_counters(t_quote_state *qs, int *i, int *j)
@@ -23,15 +35,12 @@ static void	init_tokenizer(t_tok_state *ts, t_token ***tokens, char *input)
 
 static int	handle_word(char *input, int i, t_tok_state *ts)
 {
-	int	starts_with_single;
-	int	starts_with_double;
+	t_quote_flags	qf;
 
-	starts_with_single = (input[i] == '\'');
-	starts_with_double = (input[i] == '"');
+	qf.in_single = (input[i] == '\'');
+	qf.in_double = (input[i] == '"');
 	i = extract_word_to_buf(input, i, ts->buf, &ts->qs);
-	create_token_from_buf(ts->buf, ts->tokens, *(ts->index),
-		starts_with_single, starts_with_double);
-	(*(ts->index))++;
+	create_token_from_buf(ts->buf, ts, &qf);
 	return (i);
 }
 
@@ -46,7 +55,7 @@ static int	process_tokens(char *input, t_tok_state *ts)
 		if (!input[i])
 			break ;
 		if (is_operator_char(input[i]) && !ts->qs.single_q && !ts->qs.double_q)
-			i = handle_operator(input, i, ts->tokens, (*(ts->index))++);
+			i = handle_operator(input, i, ts);
 		else
 			i = handle_word(input, i, ts);
 	}

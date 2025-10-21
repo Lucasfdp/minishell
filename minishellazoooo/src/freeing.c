@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   freeing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:54:15 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:54:16 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	error_exit(const char *msg, int error_num)
@@ -14,11 +26,11 @@ void	error_exit(const char *msg, int error_num)
 	}
 }
 
-void free_token_list(t_token **tokens)
+void	free_token_list(t_token **tokens)
 {
-	int i;
+	int	i;
 
-	if (!tokens) 
+	if (!tokens)
 		return ;
 	i = 0;
 	while (tokens[i])
@@ -38,9 +50,9 @@ void free_token_list(t_token **tokens)
 	free(tokens);
 }
 
-void free_redirs(t_redir *lst)
+void	free_redirs(t_redir *lst)
 {
-	t_redir *temp;
+	t_redir	*temp;
 
 	while (lst)
 	{
@@ -52,9 +64,9 @@ void free_redirs(t_redir *lst)
 	}
 }
 
-void free_commands(t_command *lst)
+void	free_commands(t_command *lst)
 {
-	t_command *temp;
+	t_command	*temp;
 
 	while (lst)
 	{
@@ -62,22 +74,20 @@ void free_commands(t_command *lst)
 			free_array(lst->args);
 		if (lst->redirs)
 			free_redirs(lst->redirs);
-
 		if (lst->input_fd > 0)
 			close(lst->input_fd);
 		if (lst->output_fd > 0)
 			close(lst->output_fd);
-
 		temp = lst;
 		lst = lst->next;
 		free(temp);
 	}
 }
 
-void free_shell(t_shell *shell)
+void	free_shell(t_shell *shell)
 {
 	if (!shell)
-		return;
+		return ;
 	if (shell->tokens)
 		free_array(shell->tokens);
 	if (shell->input)

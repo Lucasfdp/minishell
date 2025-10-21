@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   validate_tokens.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:54:35 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:54:36 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 static bool	is_redir_token(t_token_type type)
@@ -35,27 +47,6 @@ static bool	validate_redir(char **tokens, int i, const char *cmdline)
 	}
 	return (true);
 }
-
-// bool	validate_current_token(char **tokens, int i, t_token_type curr,
-// 	t_token_type prev, const char *cmdline)
-// {
-// 	if (curr == TOKEN_PIPE)
-// 	{
-// 		if (!validate_pipe(i, prev, cmdline))
-// 			return (false);
-// 	}
-// 	if (curr == TOKEN_HEREDOC)
-// 	{
-// 		if (!validate_heredoc(tokens, i))
-// 			return (false);
-// 	}
-// 	if (is_redir_token(curr))
-// 	{
-// 		if (!validate_redir(tokens, i, cmdline))
-// 			return (false);
-// 	}
-// 	return (true);
-// }
 
 bool	validate_current_token(t_validate_ctx *ctx, int i)
 {

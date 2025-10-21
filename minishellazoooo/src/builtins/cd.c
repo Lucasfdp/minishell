@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 00:34:34 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 20:05:55 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/21 21:58:13 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@ char	*get_old_pwd(char **env)
 	return (NULL);
 }
 
-void	execute_return(t_shell *shell, char *old_pwd, char *cwd, char ****env)
+void	execute_return(t_shell *shell, char *old_pwd, char *cwd,
+			char ****env)
 {
 	char	*new_cwd;
-	
+
 	if (!old_pwd)
 	{
 		ft_fprintf(STDERR_FILENO, "cd: OLDPWD not set\n");
@@ -52,12 +53,14 @@ void	execute_return(t_shell *shell, char *old_pwd, char *cwd, char ****env)
 
 void	execute_norm(t_shell *shell, char **args, char *cwd, char ****env)
 {
-	char	*new_cwd;
-	
+	char		*new_cwd;
+	const char	*msg;
+
+	msg = "bash: line 0: cd: %s: No such file or directory\n";
 	if (chdir(args[1]) != 0)
 	{
 		shell->exit_status = 1;
-		ft_fprintf(STDERR_FILENO, "bash: line 0: cd: %s: No such file or directory\n",
+		ft_fprintf(STDERR_FILENO, msg,
 			args[1]);
 		return ;
 	}
@@ -71,7 +74,7 @@ void	execute_norm(t_shell *shell, char **args, char *cwd, char ****env)
 static void	cd_to_home(t_shell *shell, char *home, char *cwd, char ***env)
 {
 	char	*new_cwd;
-	
+
 	if (!home)
 	{
 		ft_fprintf(STDERR_FILENO, "cd: HOME not set\n");

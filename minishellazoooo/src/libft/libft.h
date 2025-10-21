@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/08 04:28:19 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/21 22:11:04 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 # include <stddef.h>
 # include <limits.h>
 # include <sys/types.h>
-
 
 typedef struct s_list
 {
@@ -43,7 +42,6 @@ int		ft_isascii(int c);
 int		ft_isalnum(int c);
 int		ft_isprint(int c);
 int		ft_isspace(char c);
-
 
 void	*ft_memchr(const void *s, int c, size_t n);
 void	*ft_memset(void *s, int c, size_t n);
@@ -90,19 +88,19 @@ void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 
 //ft_printf
-int 	ft_putchar_fd_pf(char c, int fd);
-int 	ft_putnbr_fd_pf(int nbr, int fd);
-int 	ft_putstr_fd_pf(char  *str, int fd);
-int 	ft_putnbr_base_fd(unsigned long nbr, char *base, int fd);
-int 	ft_put_ptr_fd(void *ptr, int fd);
-int 	ft_printf(const char *format, ...);
+int		ft_putchar_fd_pf(char c, int fd);
+int		ft_putnbr_fd_pf(int nbr, int fd);
+int		ft_putstr_fd_pf(char *str, int fd);
+int		ft_putnbr_base_fd(unsigned long nbr, char *base, int fd);
+int		ft_put_ptr_fd(void *ptr, int fd);
+int		ft_printf(const char *format, ...);
 int		ft_fprintf(int fd, const char *format, ...);
-
 
 //gnl
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
+
 char	*get_next_line(int fd);
 char	*ft_strjoin_gnl(char *s1, char *s2);
 int		ft_strlen_gnl(char *str);
@@ -113,7 +111,7 @@ char	*add_line(char *storage);
 char	*clean(char *storage);
 
 //so_long
-void    free_map(char **map, int lines);
+void	free_map(char **map, int lines);
 char	**copy_matrix(char **matrix);
 
 //freeing

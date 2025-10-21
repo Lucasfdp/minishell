@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:55:05 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:55:06 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PARSING_H
 # define PARSING_H
 
@@ -5,13 +17,17 @@
 
 typedef struct s_quote_state	t_quote_state;
 
+typedef struct s_buf_state		t_buf_state;
+
+typedef struct s_quote_flags	t_quote_flags;
+
 typedef struct s_redir_params	t_redir_params;
 
 typedef struct s_tok_state		t_tok_state;
 
 typedef enum e_token_type		t_token_type;
 
-typedef struct s_validate_ctx 	t_validate_ctx;
+typedef struct s_validate_ctx	t_validate_ctx;
 
 typedef struct s_token			t_token;
 
@@ -44,15 +60,14 @@ void			prepare_hd_file(int pipe_fd[2], char *limiter,
 					int should_expand, t_shell *shell);
 int				skip_whitespace(char *input, int i);
 int				is_operator_char(char c);
-int				handle_operator(char *input, int i, t_token **tokens, int j);
-int				process_backslash(char *input, int i, char *buf, int *k,
-					int dq);
-int				process_word_char(char *in, int i, char *buf, int *k,
+int				handle_operator(char *input, int i, t_tok_state *ts);
+int				process_backslash(char *input, int i, t_buf_state *bs, int dq);
+int				process_word_char(char *in, int i, t_buf_state *bs,
 					t_quote_state *qs);
 int				extract_word_to_buf(char *in, int i, char *buf,
 					t_quote_state *qs);
-void			create_token_from_buf(char *buf, t_token **tokens, int j,
-					int ss, int sd);
+void			create_token_from_buf(char *buf, t_tok_state *ts,
+					t_quote_flags *qf);
 char			*expand_variables(t_shell *shell, char *token, int in_double);
 int				expand_dollar(t_shell *shell, char *token, int i,
 					char **result);
@@ -68,8 +83,7 @@ char			*strjoin_free(char *str, char *to_add);
 bool			is_redir_type(int type);
 bool			validate_next_redir_token(char **tokens, int i);
 void			do_error_stuff(t_shell *shell, char *token, t_command **cmd);
-bool			validate_current_token(char **tokens, int i, t_token_type curr,
-					t_token_type prev, const char *cmdline);
+bool			validate_current_token(t_validate_ctx *ctx, int i);
 int				has_unclosed_quotes(t_quote_state *qs);
 char			*alloc_tokeniser_resources(t_token ***tokens, char *input);
 char			**no_args(char *arg);

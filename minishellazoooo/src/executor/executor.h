@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.h                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/21 21:58:00 by luferna3          #+#    #+#             */
+/*   Updated: 2025/10/21 21:58:01 by luferna3         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef EXECUTOR_H
 # define EXECUTOR_H
 
@@ -22,7 +34,7 @@ char	*get_path_from_env(char **envp);
 char	*try_paths(char **split_paths, char *cmd);
 char	*get_cmd_path(t_shell *shell, t_command *cmd);
 int		ft_lstsize_2(t_command *lst);
-int	open_file_safe(char *file, int flags, int mode);
+int		open_file_safe(char *file, int flags, int mode);
 void	dup_and_close(int fd, int target_fd);
 
 #endif

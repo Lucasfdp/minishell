@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 02:12:10 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/15 03:55:00 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/21 22:04:51 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,6 @@ int	ft_strlen_gnl(char *str)
 	return (i);
 }
 
-// void	*ft_calloc(size_t count, size_t size)
-// {
-// 	char	*ptr;
-// 	size_t	i;
-
-// 	i = 0;
-// 	ptr = malloc(count * size);
-// 	if (!ptr)
-// 		return (NULL);
-// 	while (i < count * size)
-// 	{
-// 		ptr[i] = 0;
-// 		i++;
-// 	}
-// 	return (ptr);
-// }
-
 char	*ft_strjoin_gnl(char *s1, char *s2)
 {
 	char			*joint_str;
@@ -49,7 +32,8 @@ char	*ft_strjoin_gnl(char *s1, char *s2)
 	j = 0;
 	if (!s1 || !s2)
 		return (NULL);
-	joint_str = ft_calloc(sizeof(char), ft_strlen_gnl(s1) + ft_strlen_gnl(s2) + 1);
+	joint_str = ft_calloc(sizeof(char), ft_strlen_gnl(s1) + ft_strlen_gnl(s2)
+			+ 1);
 	if (!joint_str)
 		return (NULL);
 	while (s1[i] != '\0')
