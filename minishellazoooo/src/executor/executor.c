@@ -12,51 +12,6 @@ void	duppy(int fd_input, int fd_output)
 		close(fd_output);
 }
 
-void	apply_redirs(t_command *cmd)
-{
-	t_redir	*r;
-	int		fd;
-
-	r = cmd->redirs;
-	while (r)
-	{
-		if (r->type == REDIR_OUT)
-		{
-			fd = open(r->file, O_CREAT | O_TRUNC | O_WRONLY, 0644);
-			if (fd < 0)
-				error_exit(r->file, 1);
-			if (dup2(fd, STDOUT_FILENO) == -1)
-				error_exit("dup2", 1);
-			close(fd);
-		}
-		else if (r->type == REDIR_APPEND)
-		{
-			fd = open(r->file, O_CREAT | O_APPEND | O_WRONLY, 0644);
-			if (fd < 0)
-				error_exit(r->file, 1);
-			if (dup2(fd, STDOUT_FILENO) == -1)
-				error_exit("dup2", 1);
-			close(fd);
-		}
-		else if (r->type == REDIR_IN)
-		{
-			fd = open(r->file, O_RDONLY);
-			if (fd < 0)
-				error_exit(r->file, 1);
-			if (dup2(fd, STDIN_FILENO) == -1)
-				error_exit("dup2", 1);
-			close(fd);
-		}
-		else if (r->type == REDIR_HEREDOC)
-		{
-			if (dup2(r->heredoc_fd, STDIN_FILENO) == -1)
-				error_exit("dup2 heredoc", 1);
-			close(r->heredoc_fd);
-		}
-		r = r->next;
-	}
-}
-
 bool	has_heredoc(t_command *cmd)
 {
 	t_redir	*r;
@@ -113,4 +68,11 @@ void	setup_pipes(t_shell *shell)
 		i++;
 	}
 	set_pipe_fds(shell);
+}
+
+void	dup_and_close(int fd, int target_fd)
+{
+	if (dup2(fd, target_fd) == -1)
+		error_exit("dup2", 1);
+	close(fd);
 }

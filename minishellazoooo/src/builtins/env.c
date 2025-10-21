@@ -16,10 +16,15 @@ int	find_env_index(char **env, char *key)
 
 	i = 0;
 	len = ft_int_strlen(key);
+	if (!env || !key)
+		return (-1);
 	while (env[i])
 	{
-		if (env[i][len] == '=' && (!ft_strncmp(env[i], key, len)))
-			return (i);
+		if (!ft_strncmp(env[i], key, len))
+		{
+			if (env[i][len] == '=' || env[i][len] == '\0')
+				return (i);
+		}
 		i++;
 	}
 	return (-1);
@@ -49,4 +54,3 @@ char	**order_env(char **env)
 	}
 	return (sorted_env);
 }
-// potentially change _var name from minishellazooo to env

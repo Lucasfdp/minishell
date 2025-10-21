@@ -10,6 +10,20 @@ int	count_matrix(char **matrix)
 	return (i);
 }
 
+char	*get_home(char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], "HOME=", 5) == 0)
+			return (env[i] + 5);
+		i++;
+	}
+	return (NULL);
+}
+
 static void	execute_builtins2(t_command *cmd, t_shell *shell)
 {
 	if (ft_strncmp(cmd->args[0], "echo", 5) == 0)
@@ -23,7 +37,7 @@ static void	execute_builtins2(t_command *cmd, t_shell *shell)
 	else if (ft_strncmp(cmd->args[0], "unset", 6) == 0)
 		execute_unset(cmd->args, &shell->env);
 	else if (ft_strncmp(cmd->args[0], "cd", 3) == 0)
-		execute_cd(cmd->args, &shell->env);
+		execute_cd(shell, cmd->args, &shell->env);
 	else if (ft_strncmp(cmd->args[0], "exit", 5) == 0)
 		execute_exit(cmd->args, shell);
 }

@@ -1,39 +1,40 @@
 #include "builtins.h"
 
-void	unset_single(char ****env, char *var)
+void	unset_single(char ***env, char *var)
 {
-	int	j;
+	int		i;
+	int		j;
+	size_t	len;
 
-	j = 0;
-	while ((*env)[j])
+	i = 0;
+	len = ft_strlen(var);
+	while ((*env)[i])
 	{
-		if (ft_strncmp(var, (**env)[j], ft_int_strlen(var)) == 0)
+		if (ft_strncmp((*env)[i], var, len) == 0
+			&& ((*env)[i][len] == '=' || (*env)[i][len] == '\0'))
 		{
-			free((*env)[j]);
+			free((*env)[i]);
+			j = i;
 			while ((*env)[j + 1])
 			{
 				(*env)[j] = (*env)[j + 1];
 				j++;
 			}
 			(*env)[j] = NULL;
-			break ;
+			return ;
 		}
-		else
-			j++;
+		i++;
 	}
 }
 
 void	execute_unset(char **args, char ***env)
 {
 	int		i;
-	char	*var;
 
 	i = 1;
 	while (args[i])
 	{
-		var = ft_strjoin_gnl(args[i], "=");
-		unset_single(&env, var);
-		free(var);
+		unset_single(env, args[i]);
 		i++;
 	}
 }

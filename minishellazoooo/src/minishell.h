@@ -9,6 +9,7 @@
 # include <stdbool.h>
 # include <unistd.h>
 # include <signal.h>
+# include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "builtins/builtins.h"
@@ -18,6 +19,12 @@
 extern void rl_replace_line(const char *text, int clear_undo);
 extern int rl_on_new_line(void);
 extern void rl_redisplay(void);
+
+typedef struct s_quote_state
+{
+	int	single_q;
+	int	double_q;
+}	t_quote_state;
 
 typedef enum e_token_type
 {
@@ -30,12 +37,28 @@ typedef enum e_token_type
 	TOKEN_HEREDOC
 }	t_token_type;
 
+typedef struct s_validate_ctx
+{
+	char			**tokens;
+	t_token_type	curr;
+	t_token_type	prev;
+	const char		*cmdline;
+}	t_validate_ctx;
+
 typedef struct s_token
 {
-    char *value;
-    int in_single;
-    int in_double;
+	char *value;
+	int in_single;
+	int in_double;
 }   t_token;
+
+typedef struct s_tok_state
+{
+	t_token			**tokens;
+	int				*index;
+	char			*buf;
+	t_quote_state	qs;
+}	t_tok_state;
 
 typedef enum e_redir_type
 {
@@ -46,11 +69,20 @@ typedef enum e_redir_type
 	REDIR_HEREDOC
 }   t_redir_type;
 
+typedef struct s_redir_params
+{
+	t_redir_type	type;
+	char			*file_token;
+	int				should_expand;
+}	t_redir_params;
+
+
 typedef struct s_redir
 {
 	t_redir_type	type;
 	char			*file;
 	int				heredoc_fd;
+	int				expand;
 	struct s_redir	*next;
 } t_redir;
 
@@ -66,12 +98,19 @@ struct s_command
 	t_command   *next;
 };
 
+typedef struct s_parse_state
+{
+	t_command		**cmd;
+	t_token_type	*prev;
+}	t_parse_state;
+
 typedef struct s_shell
 {
-	char	    **env;
-	int		    exit_status;
+	char		**env;
+	int			exit_status;
 	char		*input;
-	char	    **tokens;
+	t_token		**token_list;
+	char		**tokens;
 	int			**pipes;
 	int			num_cmds;
 	t_command	*commands;
@@ -91,5 +130,7 @@ void	free_commands(t_command *lst);
 void    free_shell(t_shell *shell);
 void	error_exit(const char *msg, int error_num);
 void 	free_token_list(t_token **tokens);
+void	init_shell(t_shell *shell, char **envp);
+void	reset_shell_iteration(t_shell *shell);
 
 #endif

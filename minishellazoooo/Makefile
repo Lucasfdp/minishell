@@ -6,8 +6,7 @@ SRC_DIR = src
 LIBFT_DIR = $(SRC_DIR)/libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-#-g -fsanitize=address
-CFLAGS = -Wall -Wextra -Werror \
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address \
 	-I$(READLINE_PATH)/include \
 	-I$(SRC_DIR) \
 	-I$(LIBFT_DIR)
@@ -18,6 +17,7 @@ BUILTINS_DIR = $(SRC_DIR)/builtins
 PARSING_DIR = $(SRC_DIR)/parsing
 EXECUTOR_DIR = $(SRC_DIR)/executor
 SRCS = main.c \
+	$(SRC_DIR)/main_utils.c \
 	$(SRC_DIR)/readline.c \
 	$(SRC_DIR)/freeing.c \
 	$(BUILTINS_DIR)/builtins.c \
@@ -29,10 +29,23 @@ SRCS = main.c \
 	$(BUILTINS_DIR)/cd.c \
 	$(BUILTINS_DIR)/exit.c \
 	$(PARSING_DIR)/parsing.c \
+	$(PARSING_DIR)/prep_hd.c \
+	$(PARSING_DIR)/parsing_extras.c \
+	$(PARSING_DIR)/parsing_utils.c \
+	$(PARSING_DIR)/struct_fillers.c \
 	$(PARSING_DIR)/tokeniser.c \
+	$(PARSING_DIR)/tokeniser2.c \
+	$(PARSING_DIR)/count_tokens.c \
+	$(PARSING_DIR)/expand_vars.c \
+	$(PARSING_DIR)/expand_vars_utils.c \
+	$(PARSING_DIR)/expander.c \
+	$(PARSING_DIR)/validate_tokens.c \
 	$(EXECUTOR_DIR)/executor.c \
 	$(EXECUTOR_DIR)/exec2.c \
-	$(EXECUTOR_DIR)/exec3.c
+	$(EXECUTOR_DIR)/exec_commands.c \
+	$(EXECUTOR_DIR)/exec3.c \
+	$(EXECUTOR_DIR)/apply_redirs.c
+
 
 
 

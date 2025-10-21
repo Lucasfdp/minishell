@@ -1,0 +1,132 @@
+too many lines
+	fill_structs
+	expand_variables
+
+	// Update your struct (add this to your .h file)
+typedef struct s_redir
+{
+	t_redir_type	type;
+	char			*file;
+	int				heredoc_fd;
+	int				expand;        // 1 = expand vars, 0 = don't expand
+	struct s_redir	*next;
+} t_redir;
+
+// Helper: Check if delimiter has quotes
+static int	has_quotes(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+// Helper: Remove quotes from delimiter
+static char	*remove_delimiter_quotes(char *limiter)
+{
+	char	*result;
+	int		i;
+	int		j;
+
+	result = malloc(ft_strlen(limiter) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (limiter[i])
+	{
+		if (limiter[i] != '\'' && limiter[i] != '"')
+			result[j++] = limiter[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+// Updated: prepare heredoc file with expansion check
+void	prepare_hd_file(int pipe_fd[2], t_redir *redir, t_shell *shell)
+{
+	char	*line;
+	char	*expanded;
+	size_t	len;
+
+	while ((line = get_next_line(0)))
+	{
+		len = ft_strlen(line);
+		if (len > 0 && line[len - 1] == '\n')
+			line[len - 1] = '\0';
+		if (ft_strcmp(line, redir->file) == 0)
+		{
+			free(line);
+			break ;
+		}
+		if (redir->expand)
+		{
+			expanded = expand_variables(shell, line, 0);
+			write(pipe_fd[1], expanded, ft_strlen(expanded));
+			free(expanded);
+		}
+		else
+			write(pipe_fd[1], line, ft_strlen(line));
+		write(pipe_fd[1], "\n", 1);
+		free(line);
+	}
+}
+
+// Updated: prep_fds_heredoc
+void	prep_fds_heredoc(t_redir *redir, char *limiter, t_shell *shell)
+{
+	int		pipe_fd[2];
+	char	*clean_limiter;
+
+	if (pipe(pipe_fd) == -1)
+		error_exit("pipe", 1);
+	if (has_quotes(limiter))
+	{
+		redir->expand = 0;
+		clean_limiter = remove_delimiter_quotes(limiter);
+		redir->file = clean_limiter;
+	}
+	else
+	{
+		redir->expand = 1;
+		redir->file = ft_strdup(limiter);
+	}
+	prepare_hd_file(pipe_fd, redir, shell);
+	close(pipe_fd[1]);
+	redir->heredoc_fd = pipe_fd[0];
+}
+
+// Updated: add_redir function
+int	add_redir(t_command *command, t_redir_type type, char *file_token, t_shell *shell)
+{
+	t_redir *redir;
+	t_redir *redir_last;
+	
+	redir = (t_redir *)malloc(sizeof(t_redir));
+	if (!redir)
+		return (0);
+	redir->type = type;
+	redir->expand = 1;  // Default to expand (for non-heredoc)
+	if (type == REDIR_HEREDOC)
+		prep_fds_heredoc(redir, file_token, shell);
+	else 
+		redir->file = ft_strdup(file_token);
+	redir_last = command->redirs;
+	redir->next = NULL;
+	if (!redir_last)
+		command->redirs = redir;
+	else
+	{
+		while (redir_last->next != NULL)
+			redir_last = redir_last->next;
+		redir_last->next = redir;
+	}
+	return (1);
+}

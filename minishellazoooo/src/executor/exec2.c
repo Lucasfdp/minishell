@@ -15,21 +15,26 @@ void	close_all_pipes(t_shell *shell)
 
 void	use_execve(t_shell *shell, t_command *cmd)
 {
-	char *cmd_path;
+	char	*cmd_path;
 
 	cmd_path = get_cmd_path(shell, cmd);
 	if (!cmd_path)
+	{
+		shell->exit_status = 127;
 		error_exit("command not found", 127);
+	}
 	execve(cmd_path, cmd->args, shell->env);
 	perror("execve");
 	free(cmd_path);
+	shell->exit_status = 126;
 	exit(126);
 }
 
-void	exec_child(t_shell *shell, t_command *cmd)
+static void	close_unused_pipes(t_shell *shell, t_command *cmd)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	while (i < shell->num_cmds - 1)
 	{
 		if (shell->pipes[i][0] != cmd->input_fd)
@@ -38,16 +43,27 @@ void	exec_child(t_shell *shell, t_command *cmd)
 			close(shell->pipes[i][1]);
 		i++;
 	}
+}
+
+void	exec_child(t_shell *shell, t_command *cmd)
+{
+	if (shell->num_cmds > 1)
+		close_unused_pipes(shell, cmd);
 	if (cmd->redirs)
 		apply_redirs(cmd);
-	if (cmd->input_fd != STDIN_FILENO)
+	if (!cmd->args || !cmd->args[0])
+		exit(0);
+	if (cmd->input_fd >= 0 && cmd->input_fd != STDIN_FILENO)
 		if (dup2(cmd->input_fd, STDIN_FILENO) == -1)
 			error_exit("dup2 input", 1);
-	if (cmd->output_fd != STDOUT_FILENO)
+	if (cmd->output_fd >= 0 && cmd->output_fd != STDOUT_FILENO)
 		if (dup2(cmd->output_fd, STDOUT_FILENO) == -1)
 			error_exit("dup2 output", 1);
 	if (detect_builtin(cmd->args[0]))
+	{
 		execute_builtins(cmd, shell);
+		exit(shell->exit_status);
+	}
 	else
 		use_execve(shell, cmd);
 }
@@ -67,34 +83,4 @@ void	fork_that(t_shell *shell, t_command *cmd, pid_t *pids)
 		cmd = cmd->next;
 		i++;
 	}
-}
-
-void	execute_commands(t_shell *shell)
-{
-	pid_t		*pids;
-	t_command	*cmd;
-	int			i;
-
-	shell->num_cmds = ft_lstsize_2(shell->commands);
-	pids = malloc(sizeof(pid_t) * shell->num_cmds);
-	if (!pids)
-	error_exit("malloc pids", 1);
-	cmd = shell->commands;
-	if (shell->num_cmds == 1 && detect_builtin(cmd->args[0]))
-	{	
-		execute_builtins(cmd, shell);
-		exit(0);
-	}
-	if (shell->num_cmds > 1)
-		setup_pipes(shell);
-	fork_that(shell, cmd, pids);
-	if (shell->num_cmds > 1)
-		close_all_pipes(shell);
-	i = 0;
-	while (i < shell->num_cmds)
-	{
-		waitpid(pids[i], NULL, 0);
-		i++;
-	}
-	free(pids);
 }

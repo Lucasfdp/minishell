@@ -6,6 +6,8 @@ char	*extract_key(char *var)
 	char	*key;
 
 	i = 0;
+	if (!var || var[0] == '=')
+		return (NULL);
 	while (var[i] && var[i] != '=')
 		i++;
 	key = (char *)malloc(i + 1);
@@ -28,17 +30,18 @@ char	**append_to_env(char **env, char *new_var)
 	char	**new_env;
 
 	i = 0;
-	j = -1;
-	while (env[i])
+	while (env && env[i])
 		i++;
 	new_env = malloc(sizeof(char *) * (i + 2));
 	if (!new_env)
 		return (NULL);
+	j = -1;
 	while (++j < i)
-		new_env[j] = env[j];
+		new_env[j] = ft_strdup(env[j]);
 	new_env[i] = ft_strdup(new_var);
 	new_env[i + 1] = NULL;
-	free(env);
+	if (env)
+		free_array(env);
 	return (new_env);
 }
 
@@ -47,6 +50,8 @@ void	set_env_var(char ***env, char *new_var)
 	int		idx;
 	char	*key;
 
+	if (!env || !new_var)
+		return ;
 	key = extract_key(new_var);
 	if (!key)
 		return ;

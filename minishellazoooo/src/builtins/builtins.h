@@ -22,9 +22,10 @@ void	execute_export(char **args, char ***env);
 void	execute_unset(char **args, char ***env);
 int		find_env_index(char **env, char *key);
 char	**order_env(char **env);
-void	execute_cd(char **args, char ***env);
+void	execute_cd(t_shell *shell, char **args, char ***env);
 char	*get_home(char **env);
 char	*get_old_pwd(char **env);
 void	execute_exit(char **args, t_shell *shell);
+char	*get_home(char **env);
 
 #endif

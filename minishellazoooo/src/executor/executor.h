@@ -16,10 +16,13 @@ void	apply_redirs(t_command *cmd);
 
 void	setup_pipes(t_shell *shell);
 int		detect_builtin(char *str);
+void	close_all_pipes(t_shell *shell);
 
 char	*get_path_from_env(char **envp);
 char	*try_paths(char **split_paths, char *cmd);
 char	*get_cmd_path(t_shell *shell, t_command *cmd);
 int		ft_lstsize_2(t_command *lst);
+int	open_file_safe(char *file, int flags, int mode);
+void	dup_and_close(int fd, int target_fd);
 
 #endif
