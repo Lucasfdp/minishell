@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:54:49 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:54:50 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/22 01:35:03 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,18 @@ static void	init_tokenizer(t_tok_state *ts, t_token ***tokens, char *input)
 static int	handle_word(char *input, int i, t_tok_state *ts)
 {
 	t_quote_flags	qf;
+	int				result;
 
 	qf.in_single = (input[i] == '\'');
 	qf.in_double = (input[i] == '"');
-	i = extract_word_to_buf(input, i, ts->buf, &ts->qs);
+	result = extract_word_to_buf(input, i, ts->buf, &ts->qs);
+	if (result < 0)
+	{
+		qf.in_single = 1;
+		qf.in_double = 0;
+		result = -result;
+	}
+	i = result;
 	create_token_from_buf(ts->buf, ts, &qf);
 	return (i);
 }

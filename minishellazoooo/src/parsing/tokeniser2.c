@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:54:42 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:54:43 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/22 02:20:08 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,17 +78,23 @@ int	extract_word_to_buf(char *in, int i, char *buf, t_quote_state *qs)
 {
 	int				k;
 	t_buf_state		bs;
+	int				had_single_content;
 
 	k = 0;
 	bs.buf = buf;
 	bs.k = &k;
+	had_single_content = 0;
 	while (in[i] && (!ft_isspace(in[i]) || qs->single_q || qs->double_q))
 	{
+		if (qs->single_q && in[i] != '\'')
+			had_single_content = 1;
 		i = process_word_char(in, i, &bs, qs);
 		if (!qs->single_q && !qs->double_q && is_operator_char(in[i]))
 			break ;
 	}
 	buf[k] = '\0';
+	if (had_single_content)
+		return (-i);
 	return (i);
 }
 

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:58:05 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:58:06 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/22 02:05:52 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ static void	execute_builtins2(t_command *cmd, t_shell *shell)
 
 void	execute_builtins(t_command *cmd, t_shell *shell)
 {
-	if (cmd->redirs)
-		apply_redirs(cmd);
 	if (cmd->input_fd != STDIN_FILENO)
 		if (dup2(cmd->input_fd, STDIN_FILENO) == -1)
 			error_exit("dup2 input", 1);

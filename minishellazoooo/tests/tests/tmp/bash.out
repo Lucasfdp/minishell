@@ -1,1 +1,2 @@
-hi
+bash: -c: line 0: syntax error near unexpected token `newline'
+bash: -c: line 0: `echo >'
