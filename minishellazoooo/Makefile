@@ -5,8 +5,8 @@ READLINE_PATH = /opt/homebrew/opt/readline
 SRC_DIR = src
 LIBFT_DIR = $(SRC_DIR)/libft
 LIBFT = $(LIBFT_DIR)/libft.a
-
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address \
+#-g3 -fsanitize=address 
+CFLAGS = -Wall -Wextra -Werror \
 	-I$(READLINE_PATH)/include \
 	-I$(SRC_DIR) \
 	-I$(LIBFT_DIR)
@@ -20,6 +20,8 @@ SRCS = main.c \
 	$(SRC_DIR)/main_utils.c \
 	$(SRC_DIR)/readline.c \
 	$(SRC_DIR)/freeing.c \
+	$(SRC_DIR)/signals.c \
+	$(SRC_DIR)/signals2.c \
 	$(BUILTINS_DIR)/builtins.c \
 	$(BUILTINS_DIR)/echo.c \
 	$(BUILTINS_DIR)/pwd.c \
@@ -29,6 +31,7 @@ SRCS = main.c \
 	$(BUILTINS_DIR)/cd.c \
 	$(BUILTINS_DIR)/exit.c \
 	$(PARSING_DIR)/parsing.c \
+	$(PARSING_DIR)/parsing_more.c \
 	$(PARSING_DIR)/prep_hd.c \
 	$(PARSING_DIR)/parsing_extras.c \
 	$(PARSING_DIR)/parsing_utils.c \

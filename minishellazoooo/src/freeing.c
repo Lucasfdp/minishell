@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:54:15 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:54:16 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/24 05:36:39 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,17 @@ void	free_commands(t_command *lst)
 {
 	t_command	*temp;
 
+	if (!lst)
+		return ;
 	while (lst)
 	{
 		if (lst->args)
 			free_array(lst->args);
 		if (lst->redirs)
 			free_redirs(lst->redirs);
-		if (lst->input_fd > 0)
+		if (lst->input_fd > 2)
 			close(lst->input_fd);
-		if (lst->output_fd > 0)
+		if (lst->output_fd > 2)
 			close(lst->output_fd);
 		temp = lst;
 		lst = lst->next;
@@ -96,4 +98,6 @@ void	free_shell(t_shell *shell)
 		free_array(shell->env);
 	if (shell->commands)
 		free_commands(shell->commands);
+	if (shell->pipes)
+		free_int_array(shell->pipes, shell->num_cmds - 1);
 }

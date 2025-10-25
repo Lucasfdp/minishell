@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:54:57 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:54:58 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 05:44:15 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,30 @@
 void	prep_fds_heredoc(t_redir *redir, char *limiter, int should_expand,
 			t_shell *shell)
 {
-	int	pipe_fd[2];
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		status;
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("pipe", 1);
 	redir->expand = should_expand;
-	prepare_hd_file(pipe_fd, limiter, should_expand, shell);
+	pid = fork();
+	if (pid == 0)
+	{
+		close(pipe_fd[0]);
+		signal(SIGINT, SIG_DFL);
+		prepare_hd_file(pipe_fd, limiter, should_expand, shell);
+		close(pipe_fd[1]);
+		exit(0);
+	}
 	close(pipe_fd[1]);
+	waitpid(pid, &status, 0);
+	if (check_heredoc_interrupt(status, shell))
+	{
+		close(pipe_fd[0]);
+		redir->heredoc_fd = -1;
+		return ;
+	}
 	redir->heredoc_fd = pipe_fd[0];
 }
 
@@ -56,7 +73,7 @@ void	prepare_hd_file(int pipe_fd[2], char *limiter, int should_expand,
 	char	*line;
 
 	line = get_next_line(0);
-	while (line != NULL)
+	while (line)
 	{
 		strip_newline(line);
 		if (ft_strcmp(line, limiter) == 0)

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:55:05 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:55:06 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 06:01:58 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,13 @@ char			*alloc_tokeniser_resources(t_token ***tokens, char *input);
 char			**no_args(char *arg);
 void			init_parse_state(t_parse_state *ps, t_command **cmd,
 					t_token_type *prev);
+void			free_command(t_command *cmd);
+void			handle_sigint_heredoc(int sig);
+int				handle_parse_step(int step, t_shell *shell,
+					t_command **command);
+void			parse_tokens_loop(t_shell *shell, char **tokens,
+					t_command **command, t_parse_state *ps);
+int				process_token(char **tokens, int i, t_shell *shell,
+					t_parse_state *ps);
 
 #endif

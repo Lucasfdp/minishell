@@ -6,13 +6,15 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:53:32 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:53:33 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 06:06:16 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "src/minishell.h"
 #include "src/parsing/parsing.h"
 #include "src/executor/executor.h"
+
+volatile sig_atomic_t	g_sigint_received = 0;
 
 static void	cleanup_validation_fail(t_shell *shell, t_token **tokens)
 {
@@ -29,10 +31,7 @@ static int	process_input(t_shell *shell, char *input)
 	shell->input = ft_strdup(input);
 	tokens = tokeniser(input);
 	if (!tokens)
-	{
-		(void)shell;
 		return (0);
-	}
 	shell->token_list = tokens;
 	expand_tokens(shell, tokens);
 	shell->tokens = tokens_to_argv(tokens);
@@ -44,18 +43,34 @@ static int	process_input(t_shell *shell, char *input)
 	fill_structs(shell, shell->tokens);
 	free_token_list(tokens);
 	shell->token_list = NULL;
+	if (g_sigint_received)
+	{
+		g_sigint_received = 0;
+		return (0);
+	}
 	execute_commands(shell);
 	return (1);
 }
 
 static void	cleanup_iteration(t_shell *shell, char *input)
 {
+	if (shell->commands)
+	{
+		free_commands(shell->commands);
+		shell->commands = NULL;
+	}
 	if (shell->input)
 	{
 		free(shell->input);
 		shell->input = NULL;
 	}
-	free(input);
+	if (shell->tokens)
+	{
+		free_array(shell->tokens);
+		shell->tokens = NULL;
+	}
+	if (input)
+		free(input);
 }
 
 int	main(int ac, char **av, char **envp)
@@ -66,10 +81,11 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	init_shell(&shell, envp);
+	setup_signals_interactive();
 	while (1)
 	{
 		reset_shell_iteration(&shell);
-		input = read_input2();
+		input = read_input("minishell$ ");
 		if (!input)
 			break ;
 		process_input(&shell, input);

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:55:17 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:55:18 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 06:01:33 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,20 +35,22 @@ static int	handle_redir(char **tokens, int i, t_command *cmd, t_shell *shell)
 		do_error_stuff(shell, tokens[i + 1], &cmd);
 		return (-1);
 	}
-	should_expand = 1;
 	if (type == REDIR_HEREDOC && shell->token_list && shell->token_list[i + 1])
 	{
 		should_expand = !(shell->token_list[i + 1]->in_single
 				|| shell->token_list[i + 1]->in_double);
 	}
+	else
+		should_expand = 1;
 	params.type = type;
 	params.file_token = tokens[i + 1];
 	params.should_expand = should_expand;
-	add_redir(cmd, &params, shell);
+	if (add_redir(cmd, &params, shell) == -1)
+		return (-1);
 	return (2);
 }
 
-static int	process_token(char **tokens, int i, t_shell *shell,
+int	process_token(char **tokens, int i, t_shell *shell,
 				t_parse_state *ps)
 {
 	int	type;
@@ -84,13 +86,11 @@ static void	finalize_commands(t_shell *shell, t_command *cmd,
 	if (cmd->args || cmd->redirs)
 		add_command(shell, cmd);
 	else
-		free(cmd);
+		free_command(cmd);
 }
 
 void	fill_structs(t_shell *shell, char **tokens)
 {
-	int				i;
-	int				step;
 	t_command		*command;
 	t_token_type	prev_type;
 	t_parse_state	ps;
@@ -98,18 +98,6 @@ void	fill_structs(t_shell *shell, char **tokens)
 	init_parse_state(&ps, &command, &prev_type);
 	if (!command)
 		return ;
-	i = 0;
-	while (tokens[i])
-	{
-		step = process_token(tokens, i, shell, &ps);
-		if (step == -1)
-			return ;
-		if (step == 0)
-		{
-			do_error_stuff(shell, "|", &command);
-			return ;
-		}
-		i += step;
-	}
+	parse_tokens_loop(shell, tokens, &command, &ps);
 	finalize_commands(shell, command, prev_type);
 }

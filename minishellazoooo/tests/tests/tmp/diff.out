@@ -1,0 +1,5 @@
+--- ./tests/tmp/bash.out	2025-10-25 06:05:24
++++ ./tests/tmp/mini.out	2025-10-25 06:05:24
+@@ -1 +1,2 @@
+ hi
++command not found: No such file or directory

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:58:22 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:58:23 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/24 02:05:50 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ void	check_digit(char **args, t_shell *shell)
 void	execute_exit(char **args, t_shell *shell)
 {
 	if (!args[1])
+	{
+		free_shell(shell);
 		exit(shell->exit_status);
+	}
 	else if (args[1] && args[2])
 	{
 		ft_fprintf(STDERR_FILENO, "exit\nexit: too many arguments\n");

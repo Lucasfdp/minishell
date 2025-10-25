@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:55:28 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/22 01:35:20 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/24 05:31:34 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,15 @@ void	init_parse_state(t_parse_state *ps, t_command **cmd, t_token_type *prev)
 	*prev = TOKEN_NONE;
 	ps->cmd = cmd;
 	ps->prev = prev;
+}
+
+void	free_command(t_command *cmd)
+{
+	if (!cmd)
+		return ;
+	if (cmd->args)
+		free_array(cmd->args);
+	if (cmd->redirs)
+		free_redirs(cmd->redirs);
+	free(cmd);
 }

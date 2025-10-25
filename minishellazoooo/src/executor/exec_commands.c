@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:57:49 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:57:50 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 05:28:40 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ static void	fork_and_exec(t_shell *shell, pid_t *pids)
 		if (pids[i] < 0)
 			error_exit("fork", 1);
 		if (pids[i] == 0)
+		{
+			setup_signals_child();
 			exec_child(shell, cmd);
+		}
 		cmd = cmd->next;
 		i++;
 	}
@@ -51,11 +54,16 @@ static void	fork_and_exec(t_shell *shell, pid_t *pids)
 static void	wait_all_children(t_shell *shell, pid_t *pids)
 {
 	int	i;
+	int	status;
 
 	i = 0;
 	while (i < shell->num_cmds)
 	{
-		waitpid(pids[i], &shell->exit_status, 0);
+		waitpid(pids[i], &status, 0);
+		if (WIFEXITED(status))
+			shell->exit_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			shell->exit_status = 128 + WTERMSIG(status);
 		i++;
 	}
 }
@@ -77,7 +85,9 @@ void	execute_commands(t_shell *shell)
 	fork_and_exec(shell, pids);
 	if (shell->num_cmds > 1)
 		close_all_pipes(shell);
+	free_int_array(shell->pipes, shell->num_cmds - 1);
 	wait_all_children(shell, pids);
+	setup_signals_interactive();
 	free(pids);
 }
 

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:54:53 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:54:54 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 05:55:48 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,11 @@ int	add_redir(t_command *command, t_redir_params *params, t_shell *shell)
 	{
 		prep_fds_heredoc(redir, params->file_token, params->should_expand,
 			shell);
+		if (g_sigint_received)
+		{
+			free(redir);
+			return (-1);
+		}
 		redir->file = ft_strdup(params->file_token);
 	}
 	else

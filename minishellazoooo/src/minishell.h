@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:53:47 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:53:48 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 05:48:11 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 # include "builtins/builtins.h"
 # include "executor/executor.h"
 # include "parsing/parsing.h"
+
+extern volatile sig_atomic_t	g_sigint_received;
 
 extern void	rl_replace_line(const char *text, int clear_undo);
 extern int	rl_on_new_line(void);
@@ -109,7 +111,7 @@ typedef struct s_redir
 	struct s_redir	*next;
 }	t_redir;
 
-typedef struct s_command	t_command;
+typedef struct s_command		t_command;
 
 struct s_command
 {
@@ -141,8 +143,15 @@ typedef struct s_shell
 // readline functions
 char		*read_input(const char *prompt);
 char		*read_input2(void);
-void		setup_signals(void);
-void		handle_sigint(int sig);
+void		setup_signals_parent(void);
+void		handle_sigint_interactive(int sig);
+void		handle_sigint_parent(int sig);
+void		handle_sigint_child(int sig);
+void		setup_signals_interactive(void);
+void		setup_signals_parent(void);
+void		setup_signals_child(void);
+void		setup_signals_heredoc(void);
+int			check_heredoc_interrupt(int status, t_shell *shell);
 
 // freeing functions
 void		free_redirs(t_redir *lst);

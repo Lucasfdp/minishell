@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 00:34:34 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:58:13 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 05:45:56 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	execute_return(t_shell *shell, char *old_pwd, char *cwd,
 			char ****env)
 {
 	char	*new_cwd;
+	char	*tmp;
 
 	if (!old_pwd)
 	{
@@ -44,9 +45,13 @@ void	execute_return(t_shell *shell, char *old_pwd, char *cwd,
 		return ;
 	}
 	printf("%s\n", old_pwd);
-	set_env_var((*env), ft_strjoin("OLDPWD=", cwd));
+	tmp = ft_strjoin("OLDPWD=", cwd);
+	set_env_var((*env), tmp);
+	free(tmp);
 	new_cwd = getcwd(NULL, 0);
-	set_env_var((*env), ft_strjoin("PWD=", new_cwd));
+	tmp = ft_strjoin("PWD=", new_cwd);
+	set_env_var((*env), tmp);
+	free(tmp);
 	free(new_cwd);
 	shell->exit_status = 0;
 }
@@ -55,6 +60,7 @@ void	execute_norm(t_shell *shell, char **args, char *cwd, char ****env)
 {
 	char		*new_cwd;
 	const char	*msg;
+	char		*tmp;
 
 	msg = "bash: line 0: cd: %s: No such file or directory\n";
 	if (chdir(args[1]) != 0)
@@ -64,9 +70,14 @@ void	execute_norm(t_shell *shell, char **args, char *cwd, char ****env)
 			args[1]);
 		return ;
 	}
-	set_env_var((*env), ft_strjoin("OLDPWD=", cwd));
+	tmp = ft_strjoin("OLDPWD=", cwd);
+	set_env_var((*env), tmp);
+	free(tmp);
 	new_cwd = getcwd(NULL, 0);
-	set_env_var((*env), ft_strjoin("PWD=", new_cwd));
+	tmp = NULL;
+	tmp = ft_strjoin("PWD=", new_cwd);
+	set_env_var((*env), tmp);
+	free(tmp);
 	free(new_cwd);
 	shell->exit_status = 0;
 }
@@ -74,6 +85,7 @@ void	execute_norm(t_shell *shell, char **args, char *cwd, char ****env)
 static void	cd_to_home(t_shell *shell, char *home, char *cwd, char ***env)
 {
 	char	*new_cwd;
+	char	*tmp;
 
 	if (!home)
 	{
@@ -87,9 +99,14 @@ static void	cd_to_home(t_shell *shell, char *home, char *cwd, char ***env)
 		perror("cd");
 		return ;
 	}
-	set_env_var(env, ft_strjoin("OLDPWD=", cwd));
+	tmp = ft_strjoin("OLDPWD=", cwd);
+	set_env_var(env, tmp);
+	free(tmp);
 	new_cwd = getcwd(NULL, 0);
-	set_env_var(env, ft_strjoin("PWD=", new_cwd));
+	tmp = NULL;
+	tmp = ft_strjoin("PWD=", new_cwd);
+	set_env_var(env, tmp);
+	free(tmp);
 	free(new_cwd);
 	shell->exit_status = 0;
 }

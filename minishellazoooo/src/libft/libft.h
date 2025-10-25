@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/16 14:53:51 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 22:11:04 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/24 04:40:10 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,4 +116,5 @@ char	**copy_matrix(char **matrix);
 
 //freeing
 void	free_array(char **array);
+void	free_int_array(int **array, int count);
 #endif

@@ -6,7 +6,7 @@
 /*   By: luferna3 <luferna3@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/21 21:53:42 by luferna3          #+#    #+#             */
-/*   Updated: 2025/10/21 21:53:43 by luferna3         ###   ########.fr       */
+/*   Updated: 2025/10/25 06:06:01 by luferna3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*read_input(const char *prompt)
 {
 	char	*line;
 
-	setup_signals();
+	setup_signals_interactive();
 	line = readline(prompt);
 	if (!line)
 	{
@@ -43,34 +43,34 @@ char	*read_input(const char *prompt)
 	return (line);
 }
 
-char	*read_input2(void)
-{
-	char	*line;
+// char	*read_input2(void)
+// {
+// 	char	*line;
 
-	setup_signals();
+// 	setup_signals();
 
-	if (isatty(STDIN_FILENO))
-		line = readline("minishell$ ");
-	else
-		line = get_next_line(STDIN_FILENO);
+// 	if (isatty(STDIN_FILENO))
+// 		line = readline("minishell$ ");
+// 	else
+// 		line = get_next_line(STDIN_FILENO);
 
-	if (!line)
-	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "exit\n", 5);
-		return (NULL);
-	}
+// 	if (!line)
+// 	{
+// 		if (isatty(STDIN_FILENO))
+// 			write(STDOUT_FILENO, "exit\n", 5);
+// 		return (NULL);
+// 	}
 
-	// remove trailing newline for get_next_line() mode
-	if (!isatty(STDIN_FILENO))
-	{
-		size_t len = ft_strlen(line);
-		if (len > 0 && line[len - 1] == '\n')
-			line[len - 1] = '\0';
-	}
+// 	// remove trailing newline for get_next_line() mode
+// 	if (!isatty(STDIN_FILENO))
+// 	{
+// 		size_t len = ft_strlen(line);
+// 		if (len > 0 && line[len - 1] == '\n')
+// 			line[len - 1] = '\0';
+// 	}
 
-	if (*line && isatty(STDIN_FILENO))
-		add_history(line);
+// 	if (*line && isatty(STDIN_FILENO))
+// 		add_history(line);
 
-	return (line);
-}
+// 	return (line);
+// }
